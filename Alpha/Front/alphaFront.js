@@ -3,7 +3,10 @@ function log() {
   ajax.onreadystatechange = function() {       //access the onreadystatechange for the XML... object
     document.getElementById("state").innerHTML = "Authenticating..";
     if (ajax.readyState == 4 && ajax.status == 200) {
-      document.getElementById("state").innerHTML = ajax.responseText;
+      var response = JSON.parse(ajax.responseText);
+      document.getElementById("state").innerHTML = response.middle;
+      document.getElementById("st").innerHTML = response.back;
+
     }
   };
   ajax.open("POST", "https://web.njit.edu/~gdb6/Alpha/alphaFront.php", true);
