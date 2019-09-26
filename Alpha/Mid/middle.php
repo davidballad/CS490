@@ -22,11 +22,11 @@ $findAccept = 'Please Select a System to Sign Into';
      
 $pos = strpos($nResult, $findAccept);
 if($pos == false) { 
-            $result2 = " \"middle\" : \"NJIT  doesnt recognise you\" }";
+            $result2 = " \"middle\" : \"NJIT  doesnt recognize you\" }";
   echo $cResult.$result2;
  } 
 else {
-  $result2 = " \"middle\" : \"NJIT recognise you\" }";
+  $result2 = " \"middle\" : \"NJIT recognizes you\" }";
   echo $cResult.$result2;
 }
 
