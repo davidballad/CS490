@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Exam</title>
+    <link href="https://fonts.googleapis.com/css?family=Manjari&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../styles.css">
+  </head>
+  <body>
+	<div>
+    <h1>Create A Question</h1>
+    <h2 id="us">userNameDisplay</h2>
+              <a href="instructor.html">Home</a>
+              <button type="button" id="btnE">Create Exam</button>
+              <button onclick="logOut()">Log Out</button>
+
+              <hr>
+	<div id="body">
+
+				<h2>Create New Question</h2>
+
+				<form name='createQForm' id="createQForm" onSubmit="submitQuestion(event)">
+
+				  <div id="titleDiv">
+							<label>Title/Function Name: <input type="text" name="qtitle" id="qtitle" placeholder="Function Name"></label>
+          </div>
+
+
+					<div id="problDiv">
+							<label>Problem:<br> <textarea rows="5" cols="70" name="problem" id="problem" placeholder="Enter Problem"></textarea></label>
+					</div>
+
+
+					<div id="catDiv">
+							<label>Category:
+								<select name="cat" id="cat">
+									<option value="arrays">Arrays</option>
+									<option value="logic">Logic</option>
+									<option value="strings">Strings</option>
+								</select>
+              </label>
+					</div><br>
+
+
+					<div id="difDiv">
+							<label>Difficulty:
+								<select name"difficulty" id="difficulty">
+									<option value="easy">Easy</option>
+									<option value="medium">Medium</option>
+									<option value="hard">Hard</option>
+								</select>
+              </label>
+					</div><br>
+
+
+        <div id="case1">
+            <label>Value 1: <input type="text" name="tc1var1" id="tc1var1" placeholder="Enter value" ></label>
+						<label>Value 2: <input type="text" name="tc1var2" id="tc1var2" placeholder="Enter value"></label>
+								<div style="width: 5%">&nbsp;</div>
+								<div style="width: 40%;">
+									<input type="text" name="tc1answer" id="tc1answer" placeholder="Result">
+								</div>
+								<div class="quarter" style="width: 5%">&nbsp;</div>
+        </div>
+<hr>
+        <div id="case2">
+            <label>Value 1: <input type="text" name="tc2var1" id="tc2var1" placeholder="Enter value" ></label>
+            <label>Value 2: <input type="text" name="tc2var2" id="tc2var2" placeholder="Enter value"></label>
+								<div style="width: 5%">&nbsp;</div>
+								<div style="width: 40%;">
+									<input type="text" name="tc2answer" id="tc2answer" placeholder="Result">
+								</div>
+								<div class="quarter" style="width: 5%">&nbsp;</div>
+        </div>
+
+						<input type="submit" value="Create Question">
+				</form>
+
+		<div id ="questionStatus"> <h2>Status</h2> </div>
+	</div>
+
+
+<script src="instructor.js" charset="utf-8"></script>
+<script src="question.js" charset="utf-8"></script>
+<script src="../share.js" charset="utf-8"></script>
+
+</body>
+
+</html>

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Instructor</title>
+    <link href="https://fonts.googleapis.com/css?family=Manjari&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../styles.css">
+  </head>
+  <body>
+    <h1>Professor Main Page</h1>
+    <h2 id="us">ID</h2>
+
+  <button type="button" id="btnQ">Create A Question</button>
+  <button type="button" id="btnE">Create Exam</button>
+  <button onclick="logOut()">Log Out</button>
+  <hr>
+
+<h2> Summary</h2>
+
+<div class="wrapper">
+  <table style="width:100%; margin-bottom: 10px;">
+    <col width="10%">
+    <col width="10%">
+    <col width="10%">
+    <col width="10%">
+    <col width="50%">
+    <col width="10%">
+
+					<tr>
+						<th>Exam name</th>
+						<th>Autograde Score</th>
+						<th>Review</th>
+						<th>Release Score</th>
+					</tr>
+
+          <tbody id="examTable">
+
+          </tbody>
+
+			</table>
+</div>
+
+
+
+<script src="../share.js" charset="utf-8"></script>
+<script src="instructor.js" charset="utf-8"></script>
+  </body>
+</html>

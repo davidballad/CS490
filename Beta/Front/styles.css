@@ -1,0 +1,59 @@
+body{
+  background-color: #355c7d;
+  text-align: center;
+  margin: 7;
+  font-family: 'Manjari', sans-serif;
+
+
+}
+
+h1{
+  color: #b83d14;
+  padding-top: 20px;
+}
+
+.logInForm{
+  color: white;
+}
+
+input{
+  border-radius: 6px;
+  text-align: center;
+}
+
+table{
+  position: relative;
+  margin-left:auto;
+  margin-right:auto;
+  color: white
+}
+
+.form{
+  background-color: #394660;
+  border-radius: 20%;
+  display: inline-block;
+  padding: 60px 75px 60px;
+  border-color: white;
+  border-width: 5px;
+  border-style: dashed;
+
+}
+
+.left{
+  background-color: lightBlue;
+  width: 50%;
+  float: left;
+  display: inline-flex;
+}
+
+.right{
+  background-color: yellow;
+  width: 50%;
+  float: left;
+}
+
+.leftStudent{
+  background-color: lightBlue;
+  width: 50%;
+  float: left;
+}
