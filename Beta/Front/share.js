@@ -9,13 +9,13 @@ function stuLogged(){
 
     var user = window.localStorage.getItem('user');
     var role = window.localStorage.getItem('role');
-    console.log("role"+user);
+    console.log(user);
     console.log(role);
     // if(role == null)
     //     window.location.replace("../login/login.html");
     // if(role == "student")
     //   window.location.replace("../student/student.html");
-    //   role = window.localStorage.getItem('role');
+    // var role = window.localStorage.getItem('role');
     document.getElementById("us").innerHTML = "Hi! " + user;
     //   console.log(us);
     //   console.log(role);
