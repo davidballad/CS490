@@ -5,6 +5,7 @@
     <title>Exam</title>
     <link href="https://fonts.googleapis.com/css?family=Manjari&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../styles.css">
+    <link rel="shortcut icon" href="#">
   </head>
   <body>
 	<div>
@@ -17,17 +18,16 @@
               <hr>
 	<div id="body">
 
-				<h2>Create New Question</h2>
+				<h2>Create a New Question</h2>
 
 				<form name='createQForm' id="createQForm" onSubmit="submitQuestion(event)">
 
 				  <div id="titleDiv">
 							<label>Title/Function Name: <input type="text" name="qtitle" id="qtitle" placeholder="Function Name"></label>
-          </div>
-
+          </div><br>
 
 					<div id="problDiv">
-							<label>Problem:<br> <textarea rows="5" cols="70" name="problem" id="problem" placeholder="Enter Problem"></textarea></label>
+							<label>Problem:<br> <textarea rows="6" cols="70" name="problem" id="problem" placeholder="Enter Problem"></textarea></label>
 					</div>
 
 
@@ -53,30 +53,83 @@
 					</div><br>
 
 
+          <div id="constDiv">
+							<label>Constrains:
+								<select name"constrain" id="constrain" onChange="changetextbox()">
+                  <option value="" selected></option>
+									<option value="for">For Loop</option>
+									<option value="while">While Loop</option>
+									<option value="print">Print Value</option>
+								</select>
+              </label>
+              <input id="penalty" type="text" name="" value="" placeholder="Penalty points">
+					</div><br>
+
+
         <div id="case1">
-            <label>Value 1: <input type="text" name="tc1var1" id="tc1var1" placeholder="Enter value" ></label>
-						<label>Value 2: <input type="text" name="tc1var2" id="tc1var2" placeholder="Enter value"></label>
-								<div style="width: 5%">&nbsp;</div>
-								<div style="width: 40%;">
+            <label>Inputs: <input type="text" name="tc1var1" id="tc1var1" placeholder="Enter values" ></label>
+	              <div>&nbsp;</div>
+								<div style="width: 40%; float:right;">
 									<input type="text" name="tc1answer" id="tc1answer" placeholder="Result">
 								</div>
-								<div class="quarter" style="width: 5%">&nbsp;</div>
+                <div>&nbsp;</div><br>
         </div>
 <hr>
         <div id="case2">
-            <label>Value 1: <input type="text" name="tc2var1" id="tc2var1" placeholder="Enter value" ></label>
-            <label>Value 2: <input type="text" name="tc2var2" id="tc2var2" placeholder="Enter value"></label>
+            <label>Inputs: <input type="text" name="tc2var1" id="tc2var1" placeholder="Enter values" ></label>
+
 								<div style="width: 5%">&nbsp;</div>
-								<div style="width: 40%;">
+								<div style="width: 40%; float:right;">
 									<input type="text" name="tc2answer" id="tc2answer" placeholder="Result">
 								</div>
-								<div class="quarter" style="width: 5%">&nbsp;</div>
+								<div style="width: 5%">&nbsp;</div><br>
         </div>
+<hr>
+        <div id="case3">
+            <label>Inputs: <input type="text" name="tc3var1" id="tc3var1" placeholder="Enter values" ></label>
+
+								<div style="width: 5%">&nbsp;</div>
+								<div style="width: 40%; float:right;">
+									<input type="text" name="tc3answer" id="tc3answer" placeholder="Result">
+								</div>
+								<div style="width: 5%">&nbsp;</div><br>
+        </div>
+<hr>
+        <div id="case4">
+            <label>Inputs: <input type="text" name="tc4var1" id="tc4var1" placeholder="Enter values" ></label>
+
+								<div style="width: 5%">&nbsp;</div>
+								<div style="width: 40%; float:right;">
+									<input type="text" name="tc4answer" id="tc4answer" placeholder="Result">
+								</div>
+								<div style="width: 5%">&nbsp;</div><br>
+        </div>
+<hr>
+        <div id="case5">
+            <label>Inputs: <input type="text" name="tc5var1" id="tc5var1" placeholder="Enter values" ></label>
+
+								<div style="width: 5%">&nbsp;</div>
+								<div style="width: 40%; float:right;">
+									<input type="text" name="tc5answer" id="tc5answer" placeholder="Result">
+								</div>
+								<div style="width: 5%">&nbsp;</div><br>
+        </div>
+<hr>
+        <div id="case6">
+            <label>Inputs: <input type="text" name="tc6var1" id="tc6var1" placeholder="Enter values" ></label>
+
+								<div style="width: 5%">&nbsp;</div>
+								<div style="width: 40%; float:right;">
+									<input type="text" name="tc6answer" id="tc6answer" placeholder="Result">
+								</div>
+								<div style="width: 5%">&nbsp;</div><br>
+        </div>
+<hr>
 
 						<input type="submit" value="Create Question">
 				</form>
 
-		<div id ="questionStatus"> <h2>Status</h2> </div>
+		<h2 id ="status">Create Status</h2>
 	</div>
 
 

@@ -8,8 +8,14 @@ body{
 }
 
 h1{
-  color: #b83d14;
+  background-color: white;
+  color: #D33434;
   padding-top: 20px;
+  border-color: azure;
+  border-radius: 10px;
+  border-style: inset;
+  margin-left: 150px;
+  margin-right: 150px;
 }
 
 .logInForm{
@@ -21,39 +27,108 @@ input{
   text-align: center;
 }
 
-table{
+.loginTable{
   position: relative;
   margin-left:auto;
   margin-right:auto;
-  color: white
 }
 
-.form{
-  background-color: #394660;
-  border-radius: 20%;
+.logDiv{
+
   display: inline-block;
   padding: 60px 75px 60px;
-  border-color: white;
-  border-width: 5px;
-  border-style: dashed;
 
 }
 
 .left{
-  background-color: lightBlue;
-  width: 50%;
+  width: 60%;
   float: left;
   display: inline-flex;
+  padding-bottom: 10em;
 }
 
 .right{
-  background-color: yellow;
+
+  width: 40%;
+  float: left;
+  padding-bottom: 5em;
+}
+
+.leftStudent{
+  /*background-color: lightBlue; */
   width: 50%;
   float: left;
 }
 
-.leftStudent{
-  background-color: lightBlue;
+.rightStudent{
+  /* background-color: yellow; */
   width: 50%;
   float: left;
+}
+
+table{
+  position: relative;
+  margin-left:auto;
+  margin-right:auto;
+  border-style: inset;
+  border-spacing: 1em;
+  border-radius: 20px;
+  color: white;
+}
+
+
+.user{
+  display: inline-block;
+  width: 75px;
+  height: 75px;
+  background: #03527B;
+  border-radius: 50%;
+  position: relative;
+  border: 10px solid #03527B;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+.user::before{
+  content: '';
+  display: inline-block;
+  width: 25px;
+  height: 25px;
+  background: white;
+  border-radius: 50%;
+  position: absolute;
+  left: calc(50% - 14px);
+  top: 5px;
+}
+.user::after{
+  content: '';
+  display: inline-block;
+  width: 50px;
+  height: 50px;
+  background: white;
+  border-radius: 50%;
+  position: absolute;
+  left: calc(50% - 25px);
+  top: 35px;
+}
+
+.user:hover{
+  background-color: #355c7d;
+  border-width: 5px;
+  border-color: #355c7d;
+}
+
+.loginLogo{
+  background-color: #355c7d;
+  border-width: 5px;
+  border-color: #355c7d;
+}
+
+.top{
+  background: radial-gradient(black, transparent);
+  border-style: hidden;
+  border-radius: 20px;
+}
+
+#us{
+  color: white;
 }

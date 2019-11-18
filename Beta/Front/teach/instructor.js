@@ -29,16 +29,19 @@ function examRequest(){
   ajax.onload = function(){
     if (ajax.status >= 200 && ajax.status < 400) {
       var response = ajax.responseText;
-			///////////////////////////////////
-			var obj = {"Graded_Exam_List" :[ {"ETitle" : "testExam" ,
-"EID": "4" ,
-"Grade" : "20"} ]};
-		var response = JSON.stringify(obj);
-			//////////////////////////////////
+			if (response == "\n0 results in i\n") {
+				document.getElementById("examTable").innerHTML = "Nothing to Review Yet";
+			} else {
+				///////////////////////////////////
+					var obj = {"Graded_Exam_List" :[ {"ETitle" : "testExam" ,
+	"EID": "4" ,
+	"Grade" : "20"} ]};
+				var response = JSON.stringify(obj);
+				//////////////////////////////////
 
-			console.log(response);
-      examDisplay(response);
-
+				console.log(response);
+	      examDisplay(response);
+			}
     } else {
 			console.log("NO PHP response")
 		}
@@ -52,11 +55,12 @@ function examDisplay(response){
 
   for (var i in examDB) {
 		var tr = document.createElement("tr");
+		var studentId = examDB[i].UCID;
 
 		var exam_name_td = document.createElement("td");
 		var exam_name = document.createTextNode(examDB[i].ETitle);
 		exam_name_td.appendChild(exam_name);
-		exam_name_td.id = "test_id_"+examDB[i].ETitle;
+		exam_name_td.id = "test_id_"+examDB[i].UCID;
 
 		var autograde = document.createElement("td");
 		var exam_grade = document.createTextNode(examDB[i].Grade);
@@ -64,14 +68,7 @@ function examDisplay(response){
 
 
 		var review_td = document.createElement("td");
-		review_td.innerHTML = '<div"><input type="button" value="Review" onClick="reviewExams('+examDB.EID+', '+examDB.ETitle+')"></div>'
-
-		// var release_td = document.createElement("td");
-		// if (examDB[i].status == 'released'){
-		// 	release_td.innerHTML = '<div><input type="button" value="Release" onClick="releaseScore('+i+')" disabled></div>'
-		// } else {
-		// 	release_td.innerHTML = '<div><input type="button" value="Release" onClick="releaseScore('+i+')"></div>'
-		// }
+		review_td.innerHTML = '<div"><input type="button" value="Review" onClick="reviewExams('+examDB[i].EID+', '+examDB[i].UCID+')"></div>'
 
 		tr.appendChild(exam_name_td);
 		tr.appendChild(autograde)
@@ -112,9 +109,9 @@ function releaseScoreRequest(examName){
 }
 
 
-function reviewExams(examID, examName){
-	window.localStorage.setItem('UCID', window.localStorage.getItem('user'));
+function reviewExams(examID, studID){
+	window.localStorage.setItem('UCID', studID);
 	window.localStorage.setItem("EID", examID);
-	window.localStorage.setItem('examName', examName);
+	window.localStorage.setItem('examName', document.getElementById("test_id_"+studID).innerHTML);
 	goTo("modify.html");
 }

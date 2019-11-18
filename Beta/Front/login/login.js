@@ -2,10 +2,10 @@
 document.querySelector("#form").addEventListener("submit", function(e){
 	e.preventDefault();
 	//making a call user userLogin()
-	userLogg()
+	logInUser()
 });
 
-function userLogg(){
+function logInUser(){
   var ucid = document.getElementById('ucid');
 	var pass = document.getElementById('pass');
 
@@ -26,17 +26,17 @@ function log(user, password){
 		if (request.status >= 200 && request.status < 400) {
 			var response = request.responseText;
 			console.log(response);
-			loggin(response, user);
+			loggedIn(response, user);
 		} else {
-			console.log(response);
+			console.log("No PHP response");
 		}
   };
 }
 
-function loggin(response, user){
+function loggedIn(response, user){
   var getRes = JSON.parse(response);
-	if(getRes =="fail"){
-		console.log("failed");
+	if(getRes.verify =="false"){
+		document.getElementById("status").innerHTML = "Check Your Credentials and try again";
 	}
 	else{
     var usRole = getRes.role;

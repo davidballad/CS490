@@ -7,10 +7,10 @@ var questionDB = [];
 window.onload=function(){
 	teachLogged();
 	examName = "Exam 2";
-	studentName = "theo";
+	studentName = "gdb6";
 	examId = 4;
 	// examName = window.localStorage.getItem('examName');
-	// examId = window.localStorage.getItem('examId');
+	// examId = window.localStorage.getItem('EID');
 	// studentName = window.localStorage.getItem('UCID');
 	callExamReview(studentName, examId);
 	document.getElementById('exam_name').innerHTML = examName;
@@ -44,6 +44,7 @@ function examDisplay(response){
 			<div class="review-body">
 				<div class="question">
 					<h4 id="question_id_`+i+`"> Function Title: `+questionDB[i]['Title']+` </h4>
+					<p>Question ID:</p>
 					<p id="question_`+i+`">`+questionDB[i]['QID']+`</p>
 				</div>
 				<div class="answerbox">
@@ -54,7 +55,7 @@ function examDisplay(response){
 				</div>
 				<div class="teacherNotes">
 					<h4>  Feedback: </h4>
-					<textarea class="teacheranswer" id="teacher_notes_`+i+`">`+questionDB[i]['Comments']+`</textarea>
+					<textarea class="teacheranswer" id="teacher_notes_`+i+`">`+questionDB[i]['Feedback']+`</textarea>
 				</div>
 				<div class="autoNotes">
 					<table>
@@ -95,15 +96,18 @@ function examDisplay(response){
 function updateStudentExam(){
 	for (var i in question_ids){
 			var id = question_ids[i];
+			var questionId = document.getElementById("question_"+i).innerHTML;
 			var grade =  document.getElementById("student_score_"+id).value;
 			var teacherNotes = document.getElementById("teacher_notes_"+id).value;
+			var sAnswer = document.getElementById("student_answer_"+id).value;
 
 			array = {
 				"mode": "GradeFin",
 				"UCID": studentName,
 				"EID": examName,
-				"QID":question_ids.QID,
-				"Grade":grade,
+				"QID": questionId,
+				"SAnswer": sAnswer,
+				"QPoints":grade,
 				"Feedback": teacherNotes
 				}
 
@@ -155,27 +159,36 @@ function callExamReview(username, examId){
       console.log(response);
 
 			//////////////////////////////////////
-							var obj = {"Answer_List" :[ {"Title" : "pyadder" ,
-				"Answer" : "test enter test" ,
-				"Problem" : "Create a Python function that adds x and y and return the sum" ,
-				"Comments" : "" ,
-				"Points" : "10" ,
-				"Max_Points" : "10"} , {"Title" : "samefinder" ,
-				"Answer" : "test enter test" ,
-				"Problem" : "Create a Python function that compares two variables and returns true if they are the same" ,
-				"Comments" : "" ,
-				"Points" : "10" ,
-				"Max_Points" : "10"} , {"Title" : "differencefinder" ,
-				"Answer" : "test enter test" ,
-				"Problem" : "Create a Python function that compares two variables and returns true if they are different" ,
-				"Comments" : "" ,
-				"Points" : "10" ,
-				"Max_Points" : "10"} , {"Title" : "pymult" ,
-				"Answer" : "test enter test" ,
-				"Problem" : "Create a Python function that multiplies two variables by each other and returns the product" ,
-				"Comments" : "" ,
-				"Points" : "10" ,
-				"Max_Points" : "10"} ]};
+							var obj = {"Answer_List" :[ {"QID" : 39 ,
+							 "Title" : "pyadder" ,
+							 "Answer" : "test  enter test" ,
+							 "Problem" : "Create a Python function that adds x and y and return the sum" ,
+							 "Comments" : "" ,
+							 "Feedback" : "I auto-review this exam; x is wrong; new line here",
+							 "Points" : 10 ,
+							 "Max_Points" : 10} ,
+ {"QID" : 40 ,
+"Title" : "samefinder" ,
+"Answer" : "test enter test" ,
+"Problem" : "Create a Python function that compares two variables and returns true if they are the same" ,
+"Comments" : "" ,
+"Feedback" : "I review this exam",
+"Points" : 10 ,
+"Max_Points" : 10} , {"QID" : 41 ,
+"Title" : "differencefinder" ,
+"Answer" : "test enter test" ,
+"Problem" : "Create a Python function that compares two variables and returns true if they are different" ,
+"Comments" : "" ,
+"Feedback" : "I review this exam",
+"Points" : 10 ,
+"Max_Points" : 10} , {"QID" : 42 ,
+"Title" : "pymult" ,
+"Answer" : "test enter test" ,
+"Problem" : "Create a Python function that multiplies two variables by each other and returns the product" ,
+"Comments" : "" ,
+"Feedback" : "I review this exam",
+"Points" : 10 ,
+"Max_Points" : 10} ]};
 						var response = JSON.stringify(obj);
 			///////////////////////////////////////
 			examDisplay(response);

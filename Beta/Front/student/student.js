@@ -45,7 +45,7 @@ function takeExamDisplay(response){
 	examNameCell.appendChild(examName);
 
 	var edit_td = document.createElement("td");
-	edit_td.innerHTML = '<div><input type="button" value="Take" onClick="takeExam('+readyExam.EID+', '+readyExam.ETitle+')"></div>';
+	edit_td.innerHTML = '<div><input type="button" value="Take" onClick="takeExam('+myExamId+', \''+myExamName+'\')"></div>';
 
 	tr.appendChild(examNameCell);
 	tr.appendChild(edit_td)
@@ -67,15 +67,25 @@ function reviewExamRequest(){
 		if (request.status >= 200 && request.status < 400) {
 			var response = request.responseText;
 
-		//////////////////////////////////////////////////
-			var obj = {"Graded_Exam_List" :[ {"ETitle" : "testExam" ,
-"EID": "4" ,
-"Grade" : "20"} ]};
-		var response = JSON.stringify(obj);
-///////////////////////////////////////////////////
-			reviewExamDisplay(response);
+			if (response == "\n0 results\n") {
+				document.getElementById("examTable").innerHTML = "Nothing to Review Yet";
+			} else {
+				//////////////////////////////////////////////////
+					var obj = {"Graded_Exam_List" :[ {"ETitle" : "testExamTitle" ,
+		"EID": "4" ,
+		"Grade" : "20"}, {"ETitle" : "Exam2test" ,
+		"EID": "5" ,
+		"Grade" : "90"}, {"ETitle" : "Exam3 test" ,
+		"EID": "6" ,
+		"Grade" : "100"} ]};
+				var response = JSON.stringify(obj);
+		///////////////////////////////////////////////////
+					reviewExamDisplay(response);
+			}
+
+
 		} else {
-			alert("NO PHP response");
+			console.log("NO PHP response");
 		}
 	};
 }
@@ -92,7 +102,7 @@ function reviewExamDisplay(response){
 		var tr = document.createElement("tr");
 
 		var exam_name_td = document.createElement("td");
-		exam_name_td.id = examDB2[i].Title;
+		exam_name_td.id = examDB2[i].ETitle;
 		var exam_name = document.createTextNode(examDB2[i].ETitle);
 		exam_name_td.appendChild(exam_name);
 
@@ -101,7 +111,7 @@ function reviewExamDisplay(response){
 		exam_grade_td.appendChild(exam_grade);
 
 		var edit_td = document.createElement("td");
-		edit_td.innerHTML = '<div><input type="button" value="Results" onClick="reviewExam('+examDB2.EID+', '+examDB2.Title+')"></div>';
+		edit_td.innerHTML = '<div><input type="button" value="Results" onClick="reviewExam('+examDB2[i].EID+', \''+examDB2[i].ETitle+'\')"></div>';
 
 		tr.appendChild(exam_name_td);
 		tr.appendChild(exam_grade_td);
@@ -112,15 +122,15 @@ function reviewExamDisplay(response){
 }
 
 
-function takeExam(examID, examName){
-	window.localStorage.setItem('UCID', window.localStorage.getItem('user'));
-	window.localStorage.setItem('EID', examID);
-	window.localStorage.setItem('examName', examName);
-	goTo('takeExam.html');
-}
-function reviewExam(examID, examName){
+function takeExam(examID, eName){
 	window.localStorage.setItem('UCID', window.localStorage.getItem('user'));
 	window.localStorage.setItem("EID", examID);
-	window.localStorage.setItem('examName', examName);
+	window.localStorage.setItem('examName', eName);
+	goTo('takeExam.html');
+}
+function reviewExam(examID, eName){
+	window.localStorage.setItem('UCID', window.localStorage.getItem('user'));
+	window.localStorage.setItem("EID", examID);
+	window.localStorage.setItem('examName', eName);
 	goTo('reviewExam.html');
 }

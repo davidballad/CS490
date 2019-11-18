@@ -84,6 +84,8 @@ function displayQuestions(response){
 }
 
 function submitExam() {
+	if (confirm("Are you sure?")) {
+
 	var flag = false
 
 	for (var i in question_ids){
@@ -122,11 +124,13 @@ function submitExam() {
 
 		}
 
+	}
+
 }
+
 function storeAnswers(fields){
 
 	var data = fields;
-	console.log(data);
 
 	var request = new XMLHttpRequest();
 
@@ -138,28 +142,30 @@ function storeAnswers(fields){
 		if (request.status >= 200 && request.status < 400) {
 			var response = request.responseText;
 			document.getElementById("status").innerHTML = "** Submitted **";
+			document.querySelectorAll("input")[0].disabled = true;
 			console.log(response)
 		} else {
 			console.log("NO PHP response")
 		}
 	};
 
-	/////SEND grade exam {UCID, EID}/// what is this doing?
-	/////////////////////////////////////
-	function sendExam(){
-		console.log("Sending finished Exam");
-		var data = '{"mode":"sendStudentExam"}';
-		var request = new XMLHttpRequest();
-		request.open("POST", "https://web.njit.edu/~gdb6/btest/front.php", true);
-		request.setRequestHeader("Content-Type", "application/json");
-		request.send(data);
+	/////SEND grade exam {UCID, EID}/// what is this doing
+	sendExam();
+}
 
-		if (request.status >= 200 && request.status < 400) {
-			var response = request.responseText;
-			console.log(response);
-		} else {
-			console.log("NO PHP response");
-			}
-	}
-
+function sendExam(){
+	console.log("Sending finished Exam");
+	var data = '{"mode":"GradeExam", "UCID":"'+username+'", "EID": "'+examId+'"}';
+	var request = new XMLHttpRequest();
+	request.open("POST", "https://web.njit.edu/~gdb6/btest/front.php", true);
+	request.setRequestHeader("Content-Type", "application/json");
+	request.send(data);
+request.onload = function(){
+	if (request.status >= 200 && request.status < 400) {
+		var response = request.responseText;
+		console.log(response);
+	} else {
+		console.log("NO PHP response");
+		}
+	};
 }

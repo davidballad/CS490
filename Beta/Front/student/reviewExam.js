@@ -6,12 +6,12 @@ var questionDB = [];
 
 window.onload = function(){
 	stuLogged();
-	//examName = window.localStorage.getItem('examName');
-				examName = "Exam 1";
+	examName = window.localStorage.getItem('examName');
+				//examName = "Exam 1";
 				studentName = "gfn4";
-				examId = "4";
+				//examId = "4";
 	//studentName = window.localStorage.getItem('UCID');
-	//examId = window.localStorage.getItem('EID');
+	examId = window.localStorage.getItem('EID');
 	teacherReview(studentName, examId);
 	document.getElementById('exam_name').innerHTML = examName;
 };
@@ -38,6 +38,7 @@ function displayExam(response){
 			<div class="container-title">
 				<div class="caption">
 					<span class="caption-title" id="question_name_`+i+`">`+questionDB[i]['Problem']+`</span>
+					<p>Question ID: `+questionDB[i]['QID']+`</p>
 					<span class="caption-explain" id="point_worth_`+i+`"> Points: </span>
 					<input type="text" disabled id="student_score_`+i+`" style="width: 20px;" value=`+questionDB[i]['Points']+`><span>/`+questionDB[i]['Max_Points']+`</span>
 				</div>
@@ -75,7 +76,7 @@ function displayExam(response){
 
 // EXAM GRADING NOTES
 		var table = document.getElementById("mid_grade_"+i);
-		var notes = questionDB[i]['Comments'].split(";");			//midAutoGrading
+		var notes = questionDB[i]['Feedback'].split(";");			//midAutoGrading
 
 		for(var j in notes){
 			var tr = document.createElement("tr");
@@ -108,27 +109,35 @@ function teacherReview(username, examId){
 			var response = request.responseText;
 
 			////////////////////////////////////////////////
-			var obj = {"Answer_List" :[ {"Title" : "pyadder" ,
+			var obj = {"Answer_List" :[ {"QID" : 39 ,
+"Title" : "pyadder" ,
 "Answer" : "test enter test" ,
 "Problem" : "Create a Python function that adds x and y and return the sum" ,
-"Comments" : "" ,
-"Points" : "10" ,
-"Max_Points" : "10"} , {"Title" : "samefinder" ,
+"Comments" : "teach said" ,
+"Feedback" : "I auto-review this exam; x is wrong",
+"Points" : 10 ,
+"Max_Points" : 10} , {"QID" : 40 ,
+"Title" : "samefinder" ,
 "Answer" : "test enter test" ,
 "Problem" : "Create a Python function that compares two variables and returns true if they are the same" ,
-"Comments" : "" ,
-"Points" : "10" ,
-"Max_Points" : "10"} , {"Title" : "differencefinder" ,
+"Comments" : "do better" ,
+"Feedback" : "I auto-review this exam; a is wrong",
+"Points" : 10 ,
+"Max_Points" : 10} , {"QID" : 41 ,
+"Title" : "differencefinder" ,
 "Answer" : "test enter test" ,
 "Problem" : "Create a Python function that compares two variables and returns true if they are different" ,
 "Comments" : "" ,
-"Points" : "10" ,
-"Max_Points" : "10"} , {"Title" : "pymult" ,
+"Feedback" : "I auto-review this exam; y is wrong",
+"Points" : 10 ,
+"Max_Points" : 10} , {"QID" : 42 ,
+"Title" : "pymult" ,
 "Answer" : "test enter test" ,
 "Problem" : "Create a Python function that multiplies two variables by each other and returns the product" ,
 "Comments" : "" ,
-"Points" : "10" ,
-"Max_Points" : "10"} ]};
+"Feedback" : "I auto-review this exam; z is wrong",
+"Points" : 10 ,
+"Max_Points" : 10} ]};
 		var response = JSON.stringify(obj);
 			///////////////////////////////////////////////
 
