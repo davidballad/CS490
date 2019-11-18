@@ -1,4 +1,6 @@
 
+/*David Balladares
+Front-End Student-TakeExam JS*/
 var examName ="";
 var username ="";
 var question_ids = [];
@@ -6,12 +8,12 @@ var questionDB = [];
 
 window.onload=function(){
 	stuLogged();
-							examName = "Exam 1";
-							examId = "4";
-							username = "gdb6";
-	//username = window.localStorage.getItem('user');
-	//examId = window.localStorage.getItem('EID');
-	//examName = window.localStorage.getItem('examName');
+							//examName = "Exam 1";
+							//examId = "4";
+							//username = "gdb6";
+	username = window.localStorage.getItem('user');
+	examId = window.localStorage.getItem('EID');
+	examName = window.localStorage.getItem('examName');
 	callExamQuestions(examId, username);
 	document.getElementById('exam_name').innerHTML = examName;
 };
@@ -23,7 +25,7 @@ function callExamQuestions(examName, username){
 	//console.log(data);
 
 	request.open('POST', 'https://web.njit.edu/~gdb6/btest/front.php', true);
-	request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');		//x-www-form-urlencoded
+	request.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');		//x-www-form-urlencoded
 	request.send(data);
 
 
@@ -32,20 +34,20 @@ function callExamQuestions(examName, username){
 			var response = request.responseText;
 			console.log(response);
 			///////////////////////////////////////////////
-			var obj = {"Exam_Question" :[ {"QID" : 40 ,
-"Title" : "samefinder" ,
-"Problem" : "Create a Python function that compares two variables and returns true if they are the same" ,
-"Points" : 10 } , {"QID" : 39 ,
-"Title" : "pyadder" ,
-"Problem" : "Create a Python function that adds x and y and return the sum" ,
-"Points" : 10 } , {"QID" : 41 ,
-"Title" : "differencefinder" ,
-"Problem" : "Create a Python function that compares two variables and returns true if they are different" ,
-"Points" : 10 } , {"QID" : 42 ,
-"Title" : "pymult" ,
-"Problem" : "Create a Python function that multiplies two variables by each other and returns the product" ,
-"Points" : 10 } ]};
-		var response = JSON.stringify(obj);
+//			var obj = {"Exam_Question" :[ {"QID" : 40 ,
+//"Title" : "samefinder" ,
+//"Problem" : "Create a Python function that compares two variables and returns true if they are the same" ,
+//"Points" : 10 } , {"QID" : 39 ,
+//"Title" : "pyadder" ,
+//"Problem" : "Create a Python function that adds x and y and return the sum" ,
+//"Points" : 10 } , {"QID" : 41 ,
+//"Title" : "differencefinder" ,
+//"Problem" : "Create a Python function that compares two variables and returns true if they are different" ,
+//"Points" : 10 } , {"QID" : 42 ,
+//"Title" : "pymult" ,
+//"Problem" : "Create a Python function that multiplies two variables by each other and returns the product" ,
+//"Points" : 10 } ]};
+//		var response = JSON.stringify(obj);
 
 			///////////////////////////////////////////////
 			displayQuestions(response);
@@ -84,8 +86,7 @@ function displayQuestions(response){
 }
 
 function submitExam() {
-	if (confirm("Are you sure?")) {
-
+if (confirm("Are you sure?")) {
 	var flag = false
 
 	for (var i in question_ids){
@@ -123,9 +124,7 @@ function submitExam() {
 			}
 
 		}
-
-	}
-
+  }
 }
 
 function storeAnswers(fields){
@@ -141,16 +140,17 @@ function storeAnswers(fields){
 	request.onload = function() {
 		if (request.status >= 200 && request.status < 400) {
 			var response = request.responseText;
-			document.getElementById("status").innerHTML = "** Submitted **";
-			document.querySelectorAll("input")[0].disabled = true;
+			document.getElementById("status").innerHTML = "<center>** Submitted! Please go back to your Home Page**</center>";
+      document.querySelectorAll("input")[0].disabled = true;
 			console.log(response)
 		} else {
 			console.log("NO PHP response")
 		}
 	};
 
-	/////SEND grade exam {UCID, EID}/// what is this doing
+	/////SEND grade exam {UCID, EID}///TODO: ask Backend why he needs this??
 	sendExam();
+
 }
 
 function sendExam(){

@@ -1,4 +1,6 @@
 
+/*David Balladares
+Front-End Student-Main JS*/
 window.onload=function(){
 	stuLogged();
 	examRequestList();
@@ -12,7 +14,7 @@ function examRequestList(){
 	var request = new XMLHttpRequest();
 
 	request.open("POST", "https://web.njit.edu/~gdb6/btest/front.php", true);
-	request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");		//json
+	request.setRequestHeader("Content-Type", "application/json; charset=UTF-8");		//json
 	request.send(data);
 
 	request.onload = function(){
@@ -20,8 +22,8 @@ function examRequestList(){
 			var response = request.responseText;
 
 /////////////////////////////////////////
-								var obj = {"ETitle": "Exam 1", "EID": "4"};		//testing
-		var response = JSON.stringify(obj);
+				//				var obj = {"ETitle": "Exam 1", "EID": "4"};		//testing
+	//	var response = JSON.stringify(obj);
 ///////////////////////////////////////////////////
 			takeExamDisplay(response);
 		} else {
@@ -60,25 +62,24 @@ function reviewExamRequest(){
 	var request = new XMLHttpRequest();
 
 	request.open("POST", "https://web.njit.edu/~gdb6/btest/front.php", true);
-	request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");		//json
+	request.setRequestHeader("Content-Type", "application/json; charset=UTF-8");		//json
 	request.send(data);
 
 	request.onload = function(){
 		if (request.status >= 200 && request.status < 400) {
 			var response = request.responseText;
-
-			if (response == "\n0 results\n") {
+      if (response == "\n0 results\n") {
 				document.getElementById("examTable").innerHTML = "Nothing to Review Yet";
 			} else {
 				//////////////////////////////////////////////////
-					var obj = {"Graded_Exam_List" :[ {"ETitle" : "testExamTitle" ,
-		"EID": "4" ,
-		"Grade" : "20"}, {"ETitle" : "Exam2test" ,
-		"EID": "5" ,
-		"Grade" : "90"}, {"ETitle" : "Exam3 test" ,
-		"EID": "6" ,
-		"Grade" : "100"} ]};
-				var response = JSON.stringify(obj);
+	//				var obj = {"Graded_Exam_List" :[ {"ETitle" : "testExamTitle" ,
+	//	"EID": "4" ,
+	//	"Grade" : "20"}, {"ETitle" : "Exam2test" ,
+	//	"EID": "5" ,
+	//	"Grade" : "90"}, {"ETitle" : "Exam3 test" ,
+	//	"EID": "6" ,
+	//	"Grade" : "100"} ]};
+	//			var response = JSON.stringify(obj);
 		///////////////////////////////////////////////////
 					reviewExamDisplay(response);
 			}

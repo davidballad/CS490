@@ -1,4 +1,6 @@
 
+/*David Balladares
+Front-End Login JS*/
 document.querySelector("#form").addEventListener("submit", function(e){
 	e.preventDefault();
 	//making a call user userLogin()
@@ -35,8 +37,8 @@ function log(user, password){
 
 function loggedIn(response, user){
   var getRes = JSON.parse(response);
-	if(getRes.verify =="false"){
-		document.getElementById("status").innerHTML = "Check Your Credentials and try again";
+	if(getRes.verify ==false){
+		document.getElementById("state").innerHTML = "Check Your Credentials and try again";
 	}
 	else{
     var usRole = getRes.role;
@@ -62,10 +64,10 @@ function loggedIn(response, user){
 
 
 ////////////////////////
-function process(){
+//function process(){
   //alert("called p");
-  window.location.replace("../teach/instructor.html");
-}
+  //window.location.replace("../teach/instructor.html");
+//}
 
-var auth_2 = document.getElementById("auth2");
-auth_2.addEventListener("click", process);
+//var auth_2 = document.getElementById("auth2");
+//auth_2.addEventListener("click", process);

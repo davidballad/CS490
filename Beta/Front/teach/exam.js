@@ -1,4 +1,6 @@
 
+/*David Balladares
+Front-End Instructor-exam JS*/
 var random = Math.floor(Math.random()*100);
 
 window.onload=function(){
@@ -17,7 +19,7 @@ function questionDBRequest(){
 	var request = new XMLHttpRequest();
 
 	request.open("POST", 'https://web.njit.edu/~gdb6/btest/front.php', true); 		//baseURL+'dbGetQuestion.php'
-	request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");   //x-www-form-urlencoded
+	request.setRequestHeader("Content-Type", "application/json; charset=UTF-8");   //x-www-form-urlencoded
 	request.send(data);
 
 	request.onload = function() {
@@ -77,11 +79,30 @@ function displayQDB(response){
 	}
 }
 
+// function XmmlRequestFunction(data, callback) {
+// 	var request = new XMLHttpRequest();
+//
+// 	request.open("POST", "https://web.njit.edu/~gdb6/btest/front.php", true);
+// 	request.setRequestHeader("Content-Type", "application/json; charset=UTF-8");
+// 	request.send(data);
+//
+// 	if (request.status >= 200 && request.status < 400) {
+// 		var response = request.responseText;
+// 		console.log(response)
+// 		callback(response);
+// 	} else {
+// 		console.log("NO PHP response")
+//
+// 	}
+//
+// }
+
 function submitExam(event){
 	event.preventDefault();
 
-	var examtitle = document.getElementById("Title").value;
+ 	var examtitle = document.getElementById("Title").value;
 	var examCStatus = document.getElementById("createStatus");
+
 	if(question_count == 0){
 		document.getElementById("status").innerHTML = "Nothing slected. Please select questions to Add to your exam";
 		examCStatus.innerHTML = "** See Error Message Above **";
@@ -89,7 +110,18 @@ function submitExam(event){
 		else if (examtitle == "") {
 			document.getElementById("status").innerHTML = "Please enter an EXAM TITLE to continue";
 			examCStatus.innerHTML = "** See Error Message Above **";
-		} else {
+		}
+    //else if(examtitle != "" && question_count != 0){
+      //for(var k in questions_added){
+        //var pointId = questions_added[k];
+        //var pointVal = document.getElementById("points_"+pointId).value;
+        //if(pointVal == ""){
+         // document.getElementById("status").innerHTML = "See message Below";
+          //examCStatus.innerHTML = "** Add Point Value to continue **";
+       // }
+     // }
+   // }
+   else {
 			document.getElementById("status").innerHTML = "";
 			examCStatus.innerHTML = "Creating Exam...";
 			createExamRequest(examtitle);
@@ -151,7 +183,7 @@ var data = '{"mode":"CreateExam","etitle":"'+examtitle+'"}';
 var request = new XMLHttpRequest();
 
 request.open("POST", "https://web.njit.edu/~gdb6/btest/front.php", true);
-request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded"); //x-www-form-urlencoded
+request.setRequestHeader("Content-Type", "application/json"); //x-www-form-urlencoded
 request.send(data);
 
 request.onload = function() {
@@ -175,12 +207,12 @@ var num = parseFloat(i)+1;		//QID
 var points = document.getElementById("points_"+questID).value;
 
 var data = '{"mode":"AddEQ","QID":"'+questID+'","num":"'+num+'","grade":"'+points+'"}';
-alert(data);
+//alert(data);
 
 var request = new XMLHttpRequest();
 
 request.open("POST", "https://web.njit.edu/~gdb6/btest/front.php", true);
-request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
+request.setRequestHeader("Content-Type", "application/json");
 request.send(data);
 
 if (request.status >= 200 && request.status < 400) {
@@ -199,7 +231,7 @@ function assign(){
 	var data = '{"mode":"AssignExam"}';
 	var request = new XMLHttpRequest();
 	request.open("POST", "https://web.njit.edu/~gdb6/btest/front.php", true);
-	request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
+	request.setRequestHeader("Content-Type", "application/json");
 	request.send(data);
 
 	request.onload = function(){

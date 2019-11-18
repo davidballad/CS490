@@ -1,4 +1,6 @@
 
+/*David Balladares
+Front-End Instructor-modifyExam JS*/
 var examName ="";
 var studentName ="";
 var question_ids = [];
@@ -6,12 +8,9 @@ var questionDB = [];
 
 window.onload=function(){
 	teachLogged();
-	examName = "Exam 2";
-	studentName = "gdb6";
-	examId = 4;
-	// examName = window.localStorage.getItem('examName');
-	// examId = window.localStorage.getItem('EID');
-	// studentName = window.localStorage.getItem('UCID');
+	examName = window.localStorage.getItem('examName');
+	examId = window.localStorage.getItem('EID');
+	studentName = window.localStorage.getItem('UCID');
 	callExamReview(studentName, examId);
 	document.getElementById('exam_name').innerHTML = examName;
 };
@@ -75,7 +74,7 @@ function examDisplay(response){
 		exam_node.appendChild(new_div);
 		question_ids.push(i);
 
-// EXAM GRADING NOTES
+// EXAM GRADING NOTES From MID auto-exam
 		var table = document.getElementById("mid_grade_"+i);
 		var notes = questionDB[i]['Comments'].split(";");
 
@@ -104,7 +103,7 @@ function updateStudentExam(){
 			array = {
 				"mode": "GradeFin",
 				"UCID": studentName,
-				"EID": examName,
+				"EID": examId,
 				"QID": questionId,
 				"SAnswer": sAnswer,
 				"QPoints":grade,
@@ -124,15 +123,14 @@ function updateExamCall(fields){
 	var request = new XMLHttpRequest();
 
 	request.open('POST', 'https://web.njit.edu/~gdb6/btest/front.php', true);
-	request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
+	request.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
 	request.send(data);
 
 	request.onload = function() {
 		if (request.status >= 200 && request.status < 400) {
 			var response = request.responseText;
-			console.log(response);
-
-	      if(response=="success"){
+          var res = JSON.parse(response);
+	      if(res.E_final == "Exam Final Grade"){
 					document.getElementById("status").innerHTML = "Update Complete";
 	      } else {
 				document.getElementById("status").innerHTML = "Something Went Wrong, Please try Again";
@@ -150,7 +148,7 @@ function callExamReview(username, examId){
 	console.log(data);
 
 	request.open('POST', 'https://web.njit.edu/~gdb6/btest/front.php', true);
-	request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
+	request.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
 	request.send(data);
 
 	request.onload = function() {
@@ -159,37 +157,37 @@ function callExamReview(username, examId){
       console.log(response);
 
 			//////////////////////////////////////
-							var obj = {"Answer_List" :[ {"QID" : 39 ,
-							 "Title" : "pyadder" ,
-							 "Answer" : "test  enter test" ,
-							 "Problem" : "Create a Python function that adds x and y and return the sum" ,
-							 "Comments" : "" ,
-							 "Feedback" : "I auto-review this exam; x is wrong; new line here",
-							 "Points" : 10 ,
-							 "Max_Points" : 10} ,
- {"QID" : 40 ,
-"Title" : "samefinder" ,
-"Answer" : "test enter test" ,
-"Problem" : "Create a Python function that compares two variables and returns true if they are the same" ,
-"Comments" : "" ,
-"Feedback" : "I review this exam",
-"Points" : 10 ,
-"Max_Points" : 10} , {"QID" : 41 ,
-"Title" : "differencefinder" ,
-"Answer" : "test enter test" ,
-"Problem" : "Create a Python function that compares two variables and returns true if they are different" ,
-"Comments" : "" ,
-"Feedback" : "I review this exam",
-"Points" : 10 ,
-"Max_Points" : 10} , {"QID" : 42 ,
-"Title" : "pymult" ,
-"Answer" : "test enter test" ,
-"Problem" : "Create a Python function that multiplies two variables by each other and returns the product" ,
-"Comments" : "" ,
-"Feedback" : "I review this exam",
-"Points" : 10 ,
-"Max_Points" : 10} ]};
-						var response = JSON.stringify(obj);
+//								var obj = {"Answer_List" :[ {"QID" : 39 ,
+// 							 "Title" : "pyadder" ,
+// 							 "Answer" : "test  enter test" ,
+// 							 "Problem" : "Create a Python function that adds x and y and return the sum" ,
+// 							 "Comments" : "" ,
+// 							 "Feedback" : "I auto-review this exam; x is wrong; new line here",
+// 							 "Points" : 10 ,
+// 							 "Max_Points" : 10} ,
+//  {"QID" : 40 ,
+// "Title" : "samefinder" ,
+// "Answer" : "test enter test" ,
+// "Problem" : "Create a Python function that compares two variables and returns true if they are the same" ,
+// "Comments" : "" ,
+// "Feedback" : "I review this exam",
+// "Points" : 10 ,
+// "Max_Points" : 10} , {"QID" : 41 ,
+// "Title" : "differencefinder" ,
+// "Answer" : "test enter test" ,
+// "Problem" : "Create a Python function that compares two variables and returns true if they are different" ,
+// "Comments" : "" ,
+// "Feedback" : "I review this exam",
+// "Points" : 10 ,
+// "Max_Points" : 10} , {"QID" : 42 ,
+// "Title" : "pymult" ,
+// "Answer" : "test enter test" ,
+// "Problem" : "Create a Python function that multiplies two variables by each other and returns the product" ,
+// "Comments" : "" ,
+// "Feedback" : "I review this exam",
+// "Points" : 10 ,
+// "Max_Points" : 10} ]};
+// 						var response = JSON.stringify(obj);
 			///////////////////////////////////////
 			examDisplay(response);
 		} else {

@@ -1,4 +1,6 @@
 
+/* David Balladares
+Front-End Student reviewExam JS */
 var examName ="";
 var studentName ="";
 var question_ids = [];
@@ -101,7 +103,7 @@ function teacherReview(username, examId){
 	console.log(data);
 
 	request.open("POST", "https://web.njit.edu/~gdb6/btest/front.php", true);
-	request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");			//x-www-form-urlencoded
+	request.setRequestHeader("Content-Type", "application/json; charset=UTF-8");			//x-www-form-urlencoded
 	request.send(data);
 
 	request.onload = function() {

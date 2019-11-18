@@ -1,3 +1,6 @@
+
+/*David Balladares
+Front-End Instructor-question JS*/
 window.onload = function(){
 	teachLogged();
 	document.getElementById("penalty").disabled = true;
@@ -63,9 +66,9 @@ function submitQuestion(){
 function addQuestion(questionInfo){
 	var data = questionInfo;
 	var ajax = new XMLHttpRequest();
-			alert(data);
+			//alert(data);
 	ajax.open("POST", "https://web.njit.edu/~gdb6/btest/front.php", true);
-	ajax.setRequestHeader("Content-type", "application/x-www-form-urlencoded; charset=UTF-8");   //json
+	ajax.setRequestHeader("Content-type", "application/json; charset=UTF-8");   //json
 	ajax.send(data);
 
 	ajax.onload = function(){
@@ -75,7 +78,7 @@ function addQuestion(questionInfo){
 			document.getElementById("status").innerHTML = "Question Created Succesfully";
 			var formReset = document.getElementById("createQForm");
 			formReset.reset();
-			addStatus(response);
+			//addStatus(response);
 		} else {
 			console.log("NO PHP response");
 			document.getElementById("status").innerHTML = "Something went Wrong, Try Again";

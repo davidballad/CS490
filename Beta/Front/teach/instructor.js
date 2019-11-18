@@ -1,4 +1,6 @@
 
+/*David Balladares
+Front-End Instructor-Main JS*/
 window.onload=function(){
 	teachLogged();
 	examRequest();
@@ -23,25 +25,25 @@ function examRequest(){
   var ajax = new XMLHttpRequest();
 //alert(data);
   ajax.open("POST", "https://web.njit.edu/~gdb6/btest/front.php", true);
-  ajax.setRequestHeader("Content-type", "application/x-www-form-urlencoded");		//x-www-form-urlencoded
+  ajax.setRequestHeader("Content-type", "application/json");		//x-www-form-urlencoded
 	ajax.send(data);
 
   ajax.onload = function(){
     if (ajax.status >= 200 && ajax.status < 400) {
       var response = ajax.responseText;
-			if (response == "\n0 results in i\n") {
+      if (response == "\n0 results in i\n") {
 				document.getElementById("examTable").innerHTML = "Nothing to Review Yet";
 			} else {
-				///////////////////////////////////
-					var obj = {"Graded_Exam_List" :[ {"ETitle" : "testExam" ,
-	"EID": "4" ,
-	"Grade" : "20"} ]};
-				var response = JSON.stringify(obj);
-				//////////////////////////////////
+			///////////////////////////////////
+//			var obj = {"Graded_Exam_List" :[ {"ETitle" : "testExam" ,
+//"EID": "4" ,
+//"Grade" : "20"} ]};
+//		var response = JSON.stringify(obj);
+			//////////////////////////////////
 
-				console.log(response);
-	      examDisplay(response);
-			}
+			console.log(response);
+      examDisplay(response);
+}
     } else {
 			console.log("NO PHP response")
 		}
@@ -55,7 +57,6 @@ function examDisplay(response){
 
   for (var i in examDB) {
 		var tr = document.createElement("tr");
-		var studentId = examDB[i].UCID;
 
 		var exam_name_td = document.createElement("td");
 		var exam_name = document.createTextNode(examDB[i].ETitle);
@@ -68,44 +69,14 @@ function examDisplay(response){
 
 
 		var review_td = document.createElement("td");
-		review_td.innerHTML = '<div"><input type="button" value="Review" onClick="reviewExams('+examDB[i].EID+', '+examDB[i].UCID+')"></div>'
+		review_td.innerHTML = '<div"><input type="button" value="Review" onClick="reviewExams('+examDB[i].EID+', \''+examDB[i].UCID+'\')"></div>'
 
 		tr.appendChild(exam_name_td);
 		tr.appendChild(autograde)
 		tr.appendChild(review_td);
-		//tr.appendChild(release_td);
 
 		examT.appendChild(tr);
   }
-}
-
-
-
-function releaseScore(examID){
-	releaseScoreRequest(examDB[examID].etitle);
-	location.reload();
-}
-
-
-function releaseScoreRequest(examName){
-	var data = '{"mode":"ExamScore", "etitle":"'+examName+'"}';
-
-	//alert(data);
-	var request = new XMLHttpRequest();
-
-	request.open("POST", "https://web.njit.edu/~gdb6/btest/front.php", true);		//change path after testing
-	request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
-	request.send(data);
-
-	request.onload = function() {
-		if (request.status >= 200 && request.status < 400) {
-			var response = request.responseText;
-			console.log(response);
-
-		} else {
-			console.log("No PHP response");
-		}
-	};
 }
 
 
