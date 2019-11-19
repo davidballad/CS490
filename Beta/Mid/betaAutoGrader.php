@@ -1,3 +1,6 @@
+//Jacquelynn Wilson 
+//Middle End
+
 
 
 <?php
@@ -21,12 +24,7 @@ $points = $jsonData['QPoints'];
 $function_name = $jsonData['Title'];
 $outComment = "";//set comment that will be delivered
 
-$cf = $jsonData['CF']; #constraint for 
-$pf = $jsonData['PF']; #penalty for
-$cw = $jsonData['CW']; #constrain while
-$pw = $jsonData['PW']; #penalty while
-$cp = $jsonData['CP']; #constraint print
-$pp = $jsonData['PP']; #penalty print
+
 
 
 
@@ -44,12 +42,15 @@ curl_close($c);
 $DBdata = json_decode($cResult, true);
 //print DB data
 
-$testCases = $DBdata['TC_List'];
-foreach( $testCases as $tc){
-$vars = $tc['v1'];
-$trimVars = trim($vars);
-$ans = $tc['a'];
-}
+
+$cf = $DBdata['CF']; #constraint for 
+$pf = $DBdata['PF']; #penalty for
+$cw = $DBdata['CW']; #constrain while
+$pw = $DBdata['PW']; #penalty while
+$cp = $DBdata['CP']; #constraint print
+$pp = $DBdata['PP']; #penalty print
+
+
 
 
 
@@ -110,28 +111,19 @@ $whileCheck = strpos($answer,"while");
 
 //CHECKS FOR PRINT
 
+#IF 1 then print should be used
 if($cp == 1){
-
+#checking if print exists in student answer
 $printCheck = strpos($answer,"print");
-
+#if print doesnt exist
 if($printCheck ==""){
-
+#take points away
   $outComment.=" Print statement was not included in $QID -$pp pts; ";
   $grade = $grade - $pp;
 
 }
 
-} else{
-
-  $printCheck = strpos($answer, "print");
-  if($printCheck != ""){
-  
-  $outComment.= " Print statement was used instead of return in $QID -$pp pts; ";
-  $grade = $grade - $pp; 
-  
-  }
 }
-
 
 
 
@@ -157,8 +149,8 @@ if (strtolower($functionTrimmed) == strtolower($function_Name)){
 
 } else{
 
- 	$outComment.= "Function name $functionTrimmed was incorrect for $QID -5pts; ";
-	$grade = $grade + $points - 5;
+  $outComment.= "Function name $functionTrimmed was incorrect for $QID -5pts; ";
+  $grade = $grade + $points - 5;
   
   $fpos = strpos($answer, '$functionTrimmed');
   $bpos = strpos($answer, '(');
@@ -172,14 +164,25 @@ if (strtolower($functionTrimmed) == strtolower($function_Name)){
 }
 
 
-$fileInfo = "$UCID$QID.py"; 
+
+
+
+#test cases from DB 
+$testCases = $DBdata['TC_List'];
+$val = 1;
+foreach( $testCases as $tc){
+#variables
+$vars = $tc['v1'];
+$trimVars = trim($vars);
+#expected answer
+$ans = $tc['a'];
+
+$time = date("Ymd_His").$val;
+$val++;
+
+$fileInfo = "$UCID$QID$time.py"; 
 $studentFile = fopen("$fileInfo", "a") or die("Unable to Open File");
 $stuFile = "$fileInfo";
-
-
-//TESTING OUTPUTS 
-
-
 fwrite($studentFile, "\n#Question ID: $QID\n");
 fwrite($studentFile, "#The EID:  $EID\n");
 fwrite($studentFile, "#Question Worth: $points pts\n");
@@ -197,44 +200,73 @@ $run = exec("python $fileInfo");
 
 //CHECKS THE OUTPUT 
 if ($ans == $run){
- $outComment.=" Expected output was correct for $QID; ";
+ $outComment.=" Expected output was correct for $QID Test case $trimVars ; ";
 }
 else {
-  $outComment.=" Did not match expected output for $QID -3pts ; ";
+  $outComment.=" Your answer $run did not match expected output $ans for $QID Test case $trimVars -3pts ; ";
   $grade = $grade-3;
 }
-
-
-$outFile = fopen("output.py", "a") or die("Unable to Open File");
-fwrite($outFile , "Output for question: $QID : $run\n");
-fwrite($outFile , "Comments: $outComment\n");
-fwrite($outFile , "\n");
-fwrite($outFile , "Answer: \n $answer\n");
-fwrite($outFile , "\n");
-fwrite($outFile , "\n");
-fwrite($outFile , "\n");
-fwrite($outFile , "\n");
-fclose($outFile);
 
 
 //UNLINK FILES
 unlink($fileInfo);
 
 
-$answerString = "$answer";
-$anString1 = trim(preg_replace('/\s\s+/', ' ', $answerString));
- 
-$jsonResponse =   "{\"UCID\": \"$UCID\", \"QID\":$QID, \"EID\":$EID,\"SAnswer\":\"$anString1\", \"QPoints\":$points,\"Comments\":\"$outComment\"}";
+}
 
+
+
+
+
+$outFile = fopen("output.py", "a") or die("Unable to open outPut File");
+fwrite($outFile , "Output for question: $QID : $run\n");
+fwrite($outFile , "Comments: $outComment\n");
+fwrite($outFile , "\n");
+fwrite($outFile , "Answer: \n $answer\n");
+fwrite($outFile , "\n");
+fwrite($outFile , "\n");
+fwrite($outFile, "PRINT THE WEIRD ANSWER: $ans");
+fwrite($outFile , "\n");
+fwrite($outFile , "GRADE PRINTED $grade");
+fwrite($outFile, "cf  $cf , pf $pf , cw  $cw, pw $pw , cp $cp , pp $pp");
+fwrite($outFile , "\n");
+fwrite($outFile, "DBDATA : print_r($DBdata)"); 
+fclose($outFile);
+
+#setting up to send to DB 
+$rowdata = array(
+"UCID"=>$UCID,
+"QID"=>$QID,
+"EID"=>$EID,
+"SAnswer"=>$answer,
+"QPoints"=>$grade,
+"Comments"=>$outComment
+);
+
+
+#if grade is negative number set to zero 
+if($grade <0){
+  $grade = 0; 
+  
+}
+
+
+$jsonResult = json_encode($rowdata);
 
 //send the data to the DB
 $furl = 'https://web.njit.edu/~gfn4/Projectdb/dbGradeAnswer.php';
 $f = curl_init($furl);
-curl_setopt($f, CURLOPT_POSTFIELDS, $jsonResponse);
+curl_setopt($f, CURLOPT_POSTFIELDS, $jsonResult);
 curl_setopt($f, CURLOPT_RETURNTRANSFER, true);
 curl_setopt($f, CURLOPT_HTTPHEADER, array("Content-Type: application/json"));
 $fResult = curl_exec($f);
 curl_close($f);
+
+echo($fResult);
+
+
+
+
 
 
 ?>
