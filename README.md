@@ -11,7 +11,7 @@ Technology used:
 - Python
 - mySQL
 
-Contributors: 
+# Contributors: 
 - David Balladares - FrontEnd Developer
 - Jacquelynn Wilson - Middle
 - Gabriel Ng - BackEnd Developer
