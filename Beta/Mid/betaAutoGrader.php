@@ -1,7 +1,3 @@
-//Jacquelynn Wilson 
-//Middle End
-
-
 
 <?php
 
@@ -23,7 +19,7 @@ $EID = $jsonData['EID'];
 $points = $jsonData['QPoints'];
 $function_name = $jsonData['Title'];
 $outComment = "";//set comment that will be delivered
-
+$grade = $points;
 
 
 
@@ -150,7 +146,7 @@ if (strtolower($functionTrimmed) == strtolower($function_Name)){
 } else{
 
   $outComment.= "Function name $functionTrimmed was incorrect for $QID -5pts; ";
-  $grade = $grade + $points - 5;
+  $grade = $grade - 5;
   
   $fpos = strpos($answer, '$functionTrimmed');
   $bpos = strpos($answer, '(');
@@ -165,7 +161,7 @@ if (strtolower($functionTrimmed) == strtolower($function_Name)){
 
 
 
-
+if($cp==1){
 
 #test cases from DB 
 $testCases = $DBdata['TC_List'];
@@ -176,10 +172,8 @@ $vars = $tc['v1'];
 $trimVars = trim($vars);
 #expected answer
 $ans = $tc['a'];
-
 $time = date("Ymd_His").$val;
 $val++;
-
 $fileInfo = "$UCID$QID$time.py"; 
 $studentFile = fopen("$fileInfo", "a") or die("Unable to Open File");
 $stuFile = "$fileInfo";
@@ -194,27 +188,61 @@ fwrite($studentFile, $answer); //STUDENT ANSWER / INPUT
 fwrite($studentFile, "\n");
 fwrite($studentFile, "$function_name($vars)\n");// CALLS THE FUNCTION // change later if wrong
 fclose($studentFile);
-
 $run = exec("python $fileInfo");
-
-
 //CHECKS THE OUTPUT 
 if ($ans == $run){
- $outComment.=" Expected output was correct for $QID Test case $trimVars ; ";
+ $outComment.=" Expected output $run was correct for $QID Test case $trimVars ; ";
 }
 else {
   $outComment.=" Your answer $run did not match expected output $ans for $QID Test case $trimVars -3pts ; ";
   $grade = $grade-3;
 }
-
-
 //UNLINK FILES
 unlink($fileInfo);
+}
+}
+else{
 
 
+#test cases from DB 
+$testCases = $DBdata['TC_List'];
+$val = 1;
+foreach( $testCases as $tc){
+#variables
+$vars = $tc['v1'];
+$trimVars = trim($vars);
+#expected answer
+$ans = $tc['a'];
+$time = date("Ymd_His").$val;
+$val++;
+$fileInfo = "$UCID$QID$time.py"; 
+$studentFile = fopen("$fileInfo", "a") or die("Unable to Open File");
+$stuFile = "$fileInfo";
+fwrite($studentFile, "\n#Question ID: $QID\n");
+fwrite($studentFile, "#The EID:  $EID\n");
+fwrite($studentFile, "#Question Worth: $points pts\n");
+fwrite($studentFile, "#Expected Function Name: $function_name\n");
+fwrite($studentFile, "#Grade at this Point is : $grade/$total\n");
+fwrite($studentFile, "#TestCase:  $trimVars\n");
+fwrite($studentFile, "#Answers: $ans\n");
+fwrite($studentFile, $answer); //STUDENT ANSWER / INPUT
+fwrite($studentFile, "\n");
+fwrite($studentFile, "print($function_name($vars))\n");// CALLS THE FUNCTION // change later if wrong
+fclose($studentFile);
+$run = exec("python $fileInfo");
+//CHECKS THE OUTPUT 
+if ($ans == $run){
+ $outComment.=" Expected output $run was correct for $QID Test case $trimVars ; ";
+}
+else {
+  $outComment.=" Your answer $run did not match expected output $ans for $QID Test case $trimVars -3pts ; ";
+  $grade = $grade-3;
+}
+//UNLINK FILES
+unlink($fileInfo);
 }
 
-
+}#end of else
 
 
 
