@@ -10,8 +10,9 @@ $neid = $data['EID'];
 $sql = "SELECT Title, Problem, Points, Q.QID FROM Question_Bank Q, EQuestion E WHERE Q.QID = E.QID AND E.EID = '$neid' ORDER BY Num";
 $result = $conn->query($sql);
 
-$JSON_result = "{\"Exam_Question\" :[ ";
-$i = 0;
+//$JSON_result = "{\"Exam_Question\" :[ ";
+$JSON_result = array("Exam_Question"=>array());
+
 if ($result->num_rows > 0) {
         // output data of each row
 	while($row = $result->fetch_assoc()) {
@@ -20,20 +21,19 @@ if ($result->num_rows > 0) {
 		$problem = $row["Problem"];
 		$points = $row["Points"];
     $title = $row["Title"];
-		$JSON_result = $JSON_result."{\"QID\" : $qid , 
-		\"Title\" : \"$title\" ,
-    \"Problem\" : \"$problem\" ,
-		\"Points\" : $points }" ;
-
-		$i++;
-		if($i != $result->num_rows)
-			$JSON_result = $JSON_result. " , ";
-
+	  $rowdata = array(
+     "QID"=>$qid,
+     "Title"=>$title,
+     "Problem"=>$problem,
+     "Points"=>$points
+   );	
+    
+    array_push($JSON_result['Exam_Question'], $rowdata);
+    
 	}
 
 	//close the JSON string and send it back
-	$JSON_result = $JSON_result." ]}";
-	echo $JSON_result;
+	echo json_encode($JSON_result);
 
 }
 //if you get no matches, you get this

@@ -14,11 +14,12 @@ $total = $row["ETotal"];
 
 $sql = "UPDATE EStatus SET Final_Grade = '$total', Status = '1' WHERE UCID = '$ucid' AND EID = '$eid'";
 if ($conn->query($sql) === TRUE) {	
-	echo "{ \"E_final\" : \"Exam Final Grade\" }";	
+	echo "{ \"E_final\" : \"Exam Final Grade: $total\" }";	
 }
 
 else {
-        echo "{ \"E_final\" : \"Exam failed to be graded\" }";
+        $e = mysqli_error($conn);
+        echo "{ \"E_final\" : \"Exam failed to be graded: $e\" }";
 }
 
 //close your mysql connection

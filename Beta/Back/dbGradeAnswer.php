@@ -10,8 +10,16 @@ $eid = $data['EID'];
 $ansewr = $data['SAnswer'];
 $points = $data['QPoints'];
 $comments =$data['Comments'];
+
+//$ef = json_encode($test);
+$ansewr = addslashes($ansewr);
+$comments = addslashes($comments);
+//exit;
 //echo $ansewr;
-echo "$ucid, $qid, $eid, $ansewr, $points, $comments";
+//echo "$ucid, $qid, $eid, $ansewr, $points, $comments";
+
+//echo $answer;
+
 
 $sql = "INSERT INTO EAnswer(UCID, QID, EID, Answer, Points, Comments)
 VALUES ('$ucid', '$qid', '$eid', '$ansewr', '$points', '$comments')";
@@ -23,7 +31,7 @@ if ($conn->query($sql) === TRUE) {
 
 else {
         $e = mysqli_error($conn);
-        echo "{ \"A_insert\" : \"Answer couldn't be saved: $e, $qid\" }";
+        echo "{ \"A_insert\" : \"Answer couldn't be saved: $e, $qid, $answer\" }";
 }
 
 //close your mysql connection

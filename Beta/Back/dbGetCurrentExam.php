@@ -23,7 +23,7 @@ if ($result->num_rows > 0) {
   $JSON_return = "{ \"ETitle\" : \"$etitle\" , \"EID\" : $neid }";
 }
 else{
-  $JSON_return = "{ \ETitle\" : \"No Exam Assigned\" , \"EID\" : \"\" }";
+  $JSON_return = "0 results";
 }
 
 echo $JSON_return;

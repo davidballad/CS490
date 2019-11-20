@@ -14,11 +14,12 @@ $total = $row["ETotal"];
 
 $sql = "UPDATE EStatus SET Auto_Grade = '$total' WHERE UCID = '$ucid' AND EID = '$eid'";
 if ($conn->query($sql) === TRUE) {	
-	echo "{ \"E_graded\" : \"Exam Graded: $total\" }";	
+	echo "{ \"E_graded\" : \"Exam Graded: $ucid, $eid, $total\" }";	
 }
 
 else {
-        echo "{ \"E_graded\" : \"Exam failed to be graded\" }";
+        $e = mysqli_error($conn);
+        echo "{ \"E_graded\" : \"Exam failed to be graded: $ucid, $eid, $total\", \"error\" : \"$e\" }";
 }
 
 $conn->close(); 

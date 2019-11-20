@@ -11,8 +11,8 @@ if($role == "instructor"){
   $sql = "SELECT UCID, E.EID, Auto_Grade, ETitle FROM EStatus AS S, Exam AS E WHERE Auto_Grade IS NOT NULL AND Status = 0 AND E.EID = S.EID";
   $result = $conn->query($sql);
   //after you ge the result this makes the JSON string
-  $JSON_result = "{\"Graded_Exam_List\" :[ ";
-  $i = 0;
+  //$JSON_result = "{\"Graded_Exam_List\" :[ ";
+  $JSON_result = array("Graded_Exam_List"=>array());
   if ($result->num_rows > 0) {
           // output data of each row
 	  while($row = $result->fetch_assoc()) {
@@ -21,21 +21,19 @@ if($role == "instructor"){
 		  $eid = $row["EID"];
 		  $agrade = $row["Auto_Grade"];
       $etitle = $row["ETitle"];
-		  $JSON_result = $JSON_result."{\"UCID\" : \"$ucid\" ,
-		  \"EID\": \"$eid\" , 
-      \"ETitle\": \"$etitle\" ,
-		  \"Grade\" : \"$agrade\"} ";
-
-		  $i++;
-		  if($i != $result->num_rows)
-			  $JSON_result = $JSON_result. " , ";
-
+      $rowdata = array(
+       "UCID"=>$ucid,
+       "EID"=>$eid,
+       "ETitle"=>$etitle,
+       "Grade"=>$agrade
+       );	
+       
+      array_push($JSON_result['Graded_Exam_List'], $rowdata);
+		  
 	  }
 
 	//close the JSON string and send it back
-	$JSON_result = $JSON_result." ]}";
-	echo $JSON_result;
-
+	echo json_encode($JSON_result);
   }
   //if you get no matches, you get this
   else {
@@ -47,8 +45,7 @@ else if($role == "student"){
   $sql = "SELECT E.ETitle, E.EID, Final_Grade FROM EStatus S, Exam E WHERE UCID = '$ucid' AND Status = 1 AND E.EID = S.EID";
   $result = $conn->query($sql);
   //after you ge the result this makes the JSON string
-  $JSON_result = "{\"Graded_Exam_List\" :[ ";
-  $i = 0;
+  $JSON_result = array("Graded_Exam_List"=>array());
 
   if ($result->num_rows > 0) {
           // output data of each row
@@ -57,19 +54,19 @@ else if($role == "student"){
 		  $title = $row["ETitle"];
 		  $eid = $row["EID"];
 		  $fgrade = $row["Final_Grade"];
-		  $JSON_result = $JSON_result."{\"ETitle\" : \"$title\" ,
-		  \"EID\": \"$eid\" , 
-		  \"Grade\" : \"$fgrade\"} ";
-
-		  $i++;
-		  if($i != $result->num_rows)
-			  $JSON_result = $JSON_result. " , ";
-
+        
+      $rowdata = array(
+       "UCID"=>$ucid,
+       "EID"=>$eid,
+       "ETitle"=>$title,
+       "Grade"=>$fgrade
+      );
+	
+     array_push($JSON_result['Graded_Exam_List'], $rowdata);
 	  }
 
 	//close the JSON string and send it back
-	$JSON_result = $JSON_result." ]}";
-	echo $JSON_result;
+		echo json_encode($JSON_result);
 
   }
   //if you get no matches, you get this

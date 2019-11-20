@@ -14,8 +14,7 @@ WHERE UCID = '$ucid' AND A.EID = '$eid' AND Q.QID = A.QID AND A.EID = EQ.EID AND
 $result = $conn->query($sql);
 
 //after you ge the result this makes the JSON string
-$JSON_result = "{\"Answer_List\" :[ ";
-$i = 0;
+$JSON_result = array("Answer_List"=>array());
 if ($result->num_rows > 0) {
         // output data of each row
 	while($row = $result->fetch_assoc()) {
@@ -28,7 +27,17 @@ if ($result->num_rows > 0) {
     $problem = $row["Problem"];
     $comments = $row["Comments"];
     $fb = $row["Feedback"];
-		$JSON_result = $JSON_result."{\"QID\" : $qid ,
+    $rowdata = array(
+     "QID"=>$qid,
+     "Title"=>$title,
+     "Answer"=>$answer,
+     "Problem"=>$problem,
+     "Comments"=>$comments,
+     "Feedback"=>$fb,
+     "Points"=>$points,
+     "Max_Points"=>$mp
+    );
+		/*$JSON_result = $JSON_result."{\"QID\" : $qid ,
     \"Title\" : \"$title\" ,
     \"Answer\" : \"$answer\" ,
     \"Problem\" : \"$problem\" ,
@@ -36,16 +45,13 @@ if ($result->num_rows > 0) {
     \"Feedback\" : \"$fb\" ,
 		\"Points\" : $points ,
     \"Max_Points\" : $mp}" ;
+*/
+    array_push($JSON_result['Answer_List'], $rowdata);
 
-		$i++;
-		if($i != $result->num_rows)
-			$JSON_result = $JSON_result. " , ";
-
+		
 	}
 
-	//close the JSON string and send it back
-	$JSON_result = $JSON_result." ]}";
-	echo $JSON_result;
+  echo json_encode($JSON_result);
 
 }
 //if you get no matches, you get this

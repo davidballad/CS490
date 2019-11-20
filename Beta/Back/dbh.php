@@ -18,3 +18,5 @@ if ($conn->connect_error) {
 }
 
 $data = json_decode( $HTTP_RAW_POST_DATA, true);
+
+//echo "THIS IS THE BACKEND $HTTP_RAW_POST_DATA";
