@@ -1,6 +1,8 @@
 
 /*David Balladares
 Front-End Instructor-exam JS*/
+
+
 var random = Math.floor(Math.random()*100);
 
 window.onload=function(){
@@ -177,7 +179,7 @@ function deleteQuestion(id){
 
 function createExamRequest(examtitle){
 
-var data = '{"mode":"CreateExam","etitle":"'+examtitle+'"}';
+var data = '{"mode":"CreateExam","etitle": "'+examtitle+'"}';
 
 
 var request = new XMLHttpRequest();

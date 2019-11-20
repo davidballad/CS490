@@ -1,6 +1,4 @@
 
-/*David Balladares
-Front-End Instructor-Main JS*/
 window.onload=function(){
 	teachLogged();
 	examRequest();
@@ -61,7 +59,7 @@ function examDisplay(response){
 		var exam_name_td = document.createElement("td");
 		var exam_name = document.createTextNode(examDB[i].ETitle);
 		exam_name_td.appendChild(exam_name);
-		exam_name_td.id = "test_id_"+examDB[i].UCID;
+		exam_name_td.id = "test_id_"+i;
 
 		var autograde = document.createElement("td");
 		var exam_grade = document.createTextNode(examDB[i].Grade);
@@ -69,7 +67,7 @@ function examDisplay(response){
 
 
 		var review_td = document.createElement("td");
-		review_td.innerHTML = '<div"><input type="button" value="Review" onClick="reviewExams('+examDB[i].EID+', \''+examDB[i].UCID+'\')"></div>'
+		review_td.innerHTML = '<div"><input type="button" value="Review" onClick="reviewExams('+examDB[i].EID+', \''+examDB[i].UCID+'\', '+i+')"></div>'
 
 		tr.appendChild(exam_name_td);
 		tr.appendChild(autograde)
@@ -80,9 +78,9 @@ function examDisplay(response){
 }
 
 
-function reviewExams(examID, studID){
+function reviewExams(examID, studID, myId){
 	window.localStorage.setItem('UCID', studID);
 	window.localStorage.setItem("EID", examID);
-	window.localStorage.setItem('examName', document.getElementById("test_id_"+studID).innerHTML);
+	window.localStorage.setItem('examName', document.getElementById("test_id_"+myId).innerHTML);
 	goTo("modify.html");
 }

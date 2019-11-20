@@ -49,7 +49,7 @@ function examDisplay(response){
 				<div class="answerbox">
 					<h4>  Student Answer: </h4>
 					<div>
-						<textarea disabled class="reviewanswer" id="student_answer_`+i+`">`+questionDB[i]['Answer']+`</textarea>
+						<textarea rows="16" cols="70" disabled class="reviewanswer" id="student_answer_`+i+`">`+questionDB[i]['Answer']+`</textarea>
 					</div>
 				</div>
 				<div class="teacherNotes">
@@ -101,7 +101,7 @@ function updateStudentExam(){
 			var sAnswer = document.getElementById("student_answer_"+id).value;
 
 			array = {
-				"mode": "GradeFin",
+				"mode": "UpdateAns",
 				"UCID": studentName,
 				"EID": examId,
 				"QID": questionId,
@@ -114,6 +114,7 @@ function updateStudentExam(){
       console.log(fields);
 			updateExamCall(fields);
 	}
+	setTimeout(sendFinalGrade, 1000);
 }
 
 
@@ -130,7 +131,7 @@ function updateExamCall(fields){
 		if (request.status >= 200 && request.status < 400) {
 			var response = request.responseText;
           var res = JSON.parse(response);
-	      if(res.E_final == "Exam Final Grade"){
+	      if(res.A_update == "Answer updated"){
 					document.getElementById("status").innerHTML = "Update Complete";
 	      } else {
 				document.getElementById("status").innerHTML = "Something Went Wrong, Please try Again";
@@ -138,6 +139,25 @@ function updateExamCall(fields){
 				}
 		};
 	}
+
+}
+
+function sendFinalGrade(){
+	console.log("send final grade run");
+	var data = '{"mode":"GradeFin", "EID": '+examId+', "UCID": \"'+studentName+'\"}';
+	var request = new XMLHttpRequest();
+	request.open("POST", "https://web.njit.edu/~gdb6/btest/front.php", true);
+	request.setRequestHeader("Content-Type", "application/json");
+	request.send(data);
+
+	request.onload = function(){
+		if (request.status >= 200 && request.status < 400) {
+			var response = request.responseText;
+			console.log(response);
+		} else {
+			console.log("NO PHP response, fail run");
+			}
+	};
 }
 
 
@@ -156,39 +176,6 @@ function callExamReview(username, examId){
 			var response = request.responseText;
       console.log(response);
 
-			//////////////////////////////////////
-//								var obj = {"Answer_List" :[ {"QID" : 39 ,
-// 							 "Title" : "pyadder" ,
-// 							 "Answer" : "test  enter test" ,
-// 							 "Problem" : "Create a Python function that adds x and y and return the sum" ,
-// 							 "Comments" : "" ,
-// 							 "Feedback" : "I auto-review this exam; x is wrong; new line here",
-// 							 "Points" : 10 ,
-// 							 "Max_Points" : 10} ,
-//  {"QID" : 40 ,
-// "Title" : "samefinder" ,
-// "Answer" : "test enter test" ,
-// "Problem" : "Create a Python function that compares two variables and returns true if they are the same" ,
-// "Comments" : "" ,
-// "Feedback" : "I review this exam",
-// "Points" : 10 ,
-// "Max_Points" : 10} , {"QID" : 41 ,
-// "Title" : "differencefinder" ,
-// "Answer" : "test enter test" ,
-// "Problem" : "Create a Python function that compares two variables and returns true if they are different" ,
-// "Comments" : "" ,
-// "Feedback" : "I review this exam",
-// "Points" : 10 ,
-// "Max_Points" : 10} , {"QID" : 42 ,
-// "Title" : "pymult" ,
-// "Answer" : "test enter test" ,
-// "Problem" : "Create a Python function that multiplies two variables by each other and returns the product" ,
-// "Comments" : "" ,
-// "Feedback" : "I review this exam",
-// "Points" : 10 ,
-// "Max_Points" : 10} ]};
-// 						var response = JSON.stringify(obj);
-			///////////////////////////////////////
 			examDisplay(response);
 		} else {
 			console.log("NO PHP response")

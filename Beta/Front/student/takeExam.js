@@ -1,6 +1,8 @@
 
 /*David Balladares
 Front-End Student-TakeExam JS*/
+
+
 var examName ="";
 var username ="";
 var question_ids = [];
@@ -75,7 +77,7 @@ function displayQuestions(response){
 						<h4 id="question_id_`+i+`"> Function Name: `+questionDB[i]['Title']+` </h4>
 
 						<h4> Your Answer: </h4>
-							<textarea rows="5" cols="70" class="answer" id="student_answer_`+i+`"></textarea>
+							<textarea rows="16" cols="70" class="answer" id="student_answer_`+i+`"></textarea>
 				</div>
 			</form>
 <hr>
@@ -83,6 +85,8 @@ function displayQuestions(response){
 		examDiv.appendChild(new_div);
 		question_ids.push(actualID);
 	}
+ //
+
 }
 
 function submitExam() {
@@ -140,7 +144,7 @@ function storeAnswers(fields){
 	request.onload = function() {
 		if (request.status >= 200 && request.status < 400) {
 			var response = request.responseText;
-			document.getElementById("status").innerHTML = "<center>** Submitted! Please go back to your Home Page**</center>";
+			document.getElementById("status").innerHTML = "<center>** Submitted! Please go back to your Home Page **</center>";
       document.querySelectorAll("input")[0].disabled = true;
 			console.log(response)
 		} else {
@@ -149,7 +153,7 @@ function storeAnswers(fields){
 	};
 
 	/////SEND grade exam {UCID, EID}///TODO: ask Backend why he needs this??
-	sendExam();
+      setTimeout(sendExam, 1000);
 
 }
 

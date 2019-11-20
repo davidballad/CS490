@@ -58,7 +58,7 @@ function takeExamDisplay(response){
 
 
 function reviewExamRequest(){
-	var data = '{"mode":"GetGradedExam", "UCID":"'+ window.localStorage.getItem('user')+'", "Role": "student"}';		//student, instructor
+	var data = {"mode":"GetGradedExam", "UCID": window.localStorage.getItem('user'), "Role": "student"};		//student,TODO instructor
 	var request = new XMLHttpRequest();
 
 	request.open("POST", "https://web.njit.edu/~gdb6/btest/front.php", true);

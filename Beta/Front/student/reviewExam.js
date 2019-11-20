@@ -10,9 +10,9 @@ window.onload = function(){
 	stuLogged();
 	examName = window.localStorage.getItem('examName');
 				//examName = "Exam 1";
-				studentName = "gfn4";
+				//studentName = "gfn4";
 				//examId = "4";
-	//studentName = window.localStorage.getItem('UCID');
+	studentName = window.localStorage.getItem('UCID');
 	examId = window.localStorage.getItem('EID');
 	teacherReview(studentName, examId);
 	document.getElementById('exam_name').innerHTML = examName;
@@ -50,12 +50,12 @@ function displayExam(response){
 				<div class="answerbox">
 					<h4>  Student Answer: </h4>
 					<div>
-						<textarea disabled class="reviewanswer" id="student_answer_`+i+`">`+questionDB[i]['Answer']+`</textarea>
+						<textarea rows="16" cols="70" disabled class="reviewanswer" id="student_answer_`+i+`">`+questionDB[i]['Answer']+`</textarea>
 					</div>
 				</div>
 				<div class="teacherNotes">
 					<h4>  Feedback: </h4>
-					<textarea disabled class="teacheranswer" id="teacher_notes_`+i+`">`+questionDB[i]['Comments']+`</textarea>
+					<textarea disabled class="teacheranswer" id="teacher_notes_`+i+`">`+questionDB[i]['Feedback']+`</textarea>
 				</div>
 				<div class="autoNotes">
 					<table>
@@ -78,7 +78,7 @@ function displayExam(response){
 
 // EXAM GRADING NOTES
 		var table = document.getElementById("mid_grade_"+i);
-		var notes = questionDB[i]['Feedback'].split(";");			//midAutoGrading
+		var notes = questionDB[i]['Comments'].split(";");			//midAutoGrading
 
 		for(var j in notes){
 			var tr = document.createElement("tr");
@@ -111,36 +111,36 @@ function teacherReview(username, examId){
 			var response = request.responseText;
 
 			////////////////////////////////////////////////
-			var obj = {"Answer_List" :[ {"QID" : 39 ,
-"Title" : "pyadder" ,
-"Answer" : "test enter test" ,
-"Problem" : "Create a Python function that adds x and y and return the sum" ,
-"Comments" : "teach said" ,
-"Feedback" : "I auto-review this exam; x is wrong",
-"Points" : 10 ,
-"Max_Points" : 10} , {"QID" : 40 ,
-"Title" : "samefinder" ,
-"Answer" : "test enter test" ,
-"Problem" : "Create a Python function that compares two variables and returns true if they are the same" ,
-"Comments" : "do better" ,
-"Feedback" : "I auto-review this exam; a is wrong",
-"Points" : 10 ,
-"Max_Points" : 10} , {"QID" : 41 ,
-"Title" : "differencefinder" ,
-"Answer" : "test enter test" ,
-"Problem" : "Create a Python function that compares two variables and returns true if they are different" ,
-"Comments" : "" ,
-"Feedback" : "I auto-review this exam; y is wrong",
-"Points" : 10 ,
-"Max_Points" : 10} , {"QID" : 42 ,
-"Title" : "pymult" ,
-"Answer" : "test enter test" ,
-"Problem" : "Create a Python function that multiplies two variables by each other and returns the product" ,
-"Comments" : "" ,
-"Feedback" : "I auto-review this exam; z is wrong",
-"Points" : 10 ,
-"Max_Points" : 10} ]};
-		var response = JSON.stringify(obj);
+// 			var obj = {"Answer_List" :[ {"QID" : 39 ,
+// "Title" : "pyadder" ,
+// "Answer" : "test enter test" ,
+// "Problem" : "Create a Python function that adds x and y and return the sum" ,
+// "Comments" : "teach said" ,
+// "Feedback" : "I auto-review this exam; x is wrong",
+// "Points" : 10 ,
+// "Max_Points" : 10} , {"QID" : 40 ,
+// "Title" : "samefinder" ,
+// "Answer" : "test enter test" ,
+// "Problem" : "Create a Python function that compares two variables and returns true if they are the same" ,
+// "Comments" : "do better" ,
+// "Feedback" : "I auto-review this exam; a is wrong",
+// "Points" : 10 ,
+// "Max_Points" : 10} , {"QID" : 41 ,
+// "Title" : "differencefinder" ,
+// "Answer" : "test enter test" ,
+// "Problem" : "Create a Python function that compares two variables and returns true if they are different" ,
+// "Comments" : "" ,
+// "Feedback" : "I auto-review this exam; y is wrong",
+// "Points" : 10 ,
+// "Max_Points" : 10} , {"QID" : 42 ,
+// "Title" : "pymult" ,
+// "Answer" : "test enter test" ,
+// "Problem" : "Create a Python function that multiplies two variables by each other and returns the product" ,
+// "Comments" : "" ,
+// "Feedback" : "I auto-review this exam; z is wrong",
+// "Points" : 10 ,
+// "Max_Points" : 10} ]};
+// 		var response = JSON.stringify(obj);
 			///////////////////////////////////////////////
 
 			displayExam(response);
