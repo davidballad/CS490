@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Student Main</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <h1>Student Main Page</h1>
+    <h2 id="us">userNameDisplay</h2>
+
+      <a href="takeExam.html">Take Exam</a>
+      <button onclick="logOut()">Log Out</button>
+
+
+  	<div id="body">
+  		<div id="exams" style="width: 63%; margin-bottom: 70px;">
+  			<div id="see-exams">
+  				<table style="width:100%; margin-bottom: 10px; text-align: center; vertical-align: middle" id="examTable" >
+  					<col width="70%">
+  					<col width="30%">
+  					<tr>
+  						<th>Test Name</th>
+  						<th>Status</th>
+  					</tr>
+
+  				</table>
+
+  			</div>
+
+  		</div>
+  		<div class="exams-right" style="width: 2%">&nbsp;</div>
+  		<div id="exams" class="exams-right" style="width: 35%;">
+  			<div id="create-exam">
+  				</div>
+  			</div>
+  		</div>
+
+  </div>
+
+  <script src="../share.js" charset="utf-8"></script>
+  <script src="student.js" charset="utf-8"></script>
+  </body>
+</html>
