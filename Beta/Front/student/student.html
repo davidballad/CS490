@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Student Main</title>
+    <link href="https://fonts.googleapis.com/css?family=Manjari&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="shortcut icon" href="#">
+  </head>
+  <body>
+  <div class="top">
+    <h1>Student Main Page</h1>
+    <h2 id="us">ID</h2>
+<div class="user loginLogo"></div>
+    <div class="nav">  <button onclick="logOut()">Log Out</button>   </div>
+    </div>
+      <hr>
+
+    <div class="leftStudent">
+      <h2>Take Exam</h2>
+      <table style="width:50%; margin-bottom: 10px; text-align: center; vertical-align: middle">
+        <col width="70%">
+        <col width="30%">
+        <tr>
+          <th>Exam Name</th>
+          <th>Status</th>
+        </tr>
+
+        <tbody id="takeTable">
+        </tbody>
+      </table>
+    </div>
+
+
+
+  	<div id="rightStudent">
+  		<h2>List Of Exams</h2>
+  				<table style="width:50%; margin-bottom: 10px; text-align: center; vertical-align: middle">
+  					<col width="50%">
+            <col width="20">
+  					<col width="30%">
+  					<tr>
+  						<th>Review Exam</th>
+              <th>Grade</th>
+  						<th>Status</th>
+  					</tr>
+
+            <tbody id="examTable">
+				  	</tbody>
+  				</table>
+
+  		</div>
+
+  <script src="../share.js" charset="utf-8"></script>
+  <script src="student.js" charset="utf-8"></script>
+  </body>
+</html>

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Modify Exam</title>
+    <link href="https://fonts.googleapis.com/css?family=Manjari&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="shortcut icon" href="#">
+  </head>
+  <body>
+    <div class="top">
+			<h1 id="title">Edit Exam</h1>
+      <h2 id="us">ID</h2>
+      <a href="instructor.html" title="Home"><div class="user"></div></a>
+      <div class="nav">
+      <button type="button" id="btnQ">Create A Question</button>
+      <button type="button" id="btnE">Create Exam</button>
+      <button onclick="logOut()">Log Out</button>
+      </div>
+	</div>
+  <hr>
+
+
+  <div id="question-list">
+		<div class="question-container" style="height: 60px;">
+			<div class="container-title">
+				<div class="caption">
+					<span class="caption-title" style="font-size: 48px" id="exam_name"> Exam </span>
+				</div>
+			</div>
+		</div>
+	</div>
+
+  <form>
+		<div style="text-align: center;">
+			<input type="button" value="Update Exam" onClick="updateStudentExam()">
+		</div>
+     <div style="text-align: right; font-size: 2em;">
+          <span id='status'>Status</span>
+     </div>
+	</form>
+
+
+
+  <script src="instructor.js" charset="utf-8"></script>
+  <script src="../share.js" charset="utf-8"></script>
+  <script src="modify.js" charset="utf-8"></script>
+</body>
+
+
+</html>

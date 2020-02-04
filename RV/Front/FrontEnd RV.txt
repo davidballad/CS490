@@ -1,0 +1,2118 @@
+<!--
+David Balladares
+Front End Developer
+LoginPage HTML
+-->
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <title>Login</title>
+  <link href="https://fonts.googleapis.com/css?family=Manjari&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../styles.css">
+  <link rel="shortcut icon" href="#">
+</head>
+
+<body class="login">
+  <div class="top">
+  <h1>Welcome! Login to Our Online Exam System</h1>
+  </div>
+  <div class="logDiv top">
+
+<div class="user loginLogo"></div>
+
+        <form id="form">
+        <table class="loginTable">
+          <tr>
+            <td>Username</td>
+          </tr>
+          <tr>
+            <td><input type="text" placeholder="UCID" name="ucid" id="ucid"></td>
+          </tr>
+
+          <tr>
+            <td>Password</td>
+          </tr>
+          <tr>
+            <td><input type="password" placeholder="Password" name="pass" id="pass"></td>
+          </tr>
+          <tr>
+            <td><input type="submit" value="Log In"></td>
+          </tr>
+          <tr>
+            <td class="lock"> <img src="../logo.d006f08b.png" height="75" width="220"><!--<button type="button" id="auth2">Instructor</button>--></td>
+          </tr>
+
+        </table>
+        </form>
+
+    <div style="color:white" id="state">   </div>
+    <div id="st">   </div>
+
+  </div>
+  <div class="top">
+  <h3 id="foot"> CS490 Group 4<br>All Rights Reserved</h3>
+  </div>
+  
+  <script src="login.js" charset="utf-8"></script>
+</body>
+
+</html>
+
+--------------------------------------------------------------------------------------------
+
+/*
+David Balladares
+Front End Developer
+LoginPage JS
+*/
+
+document.querySelector("#form").addEventListener("submit", function(e){
+	e.preventDefault();
+	//making a call user userLogin()
+	logInUser()
+});
+
+function logInUser(){
+  var ucid = document.getElementById('ucid');
+	var pass = document.getElementById('pass');
+
+	log(ucid.value, pass.value);
+}
+
+function log(user, password){
+    document.getElementById("state").innerHTML = "Authenticating..";
+
+  var data = '{"mode":"Verify","ucid":"'+user+'","pass":"'+password+'"}';
+	var request = new XMLHttpRequest();
+
+	request.open('POST', 'https://web.njit.edu/~gdb6/btest/front.php', true);
+	request.setRequestHeader('Content-Type', 'application/json');
+	request.send(data);
+
+	request.onload = function() {
+		if (request.status >= 200 && request.status < 400) {
+			var response = request.responseText;
+			console.log(response);
+			loggedIn(response, user);
+		} else {
+			console.log("No PHP response");
+		}
+  };
+}
+
+function loggedIn(response, user){
+  var getRes = JSON.parse(response);
+	if(getRes.verify ==false){
+		document.getElementById("state").innerHTML = "Check Your Credentials and try again";
+	}
+	else{
+    var usRole = getRes.role;
+		window.localStorage.setItem('user', user);
+		window.localStorage.setItem('role', usRole);
+
+		if(usRole == "student"){
+			//alert("Welcome Student, " + user);
+			window.location.replace("../student/student.html");
+		}
+		else if(usRole == "instructor"){
+			//alert("Welcome Professor, " + user);
+			window.location.replace("../teach/instructor.html");
+		}
+	}
+}
+
+
+var date = new Date().getFullYear();
+var par = document.getElementById("foot");
+ par.innerHTML = "&#169 " + date +  par.innerHTML;
+ 
+//var authpress = document.getElementById("auth");
+//authpress.addEventListener("click", log);
+
+//function process(){
+  //alert("called p");
+  //window.location.replace("../teach/instructor.html");
+//}
+
+//var auth_2 = document.getElementById("auth2");
+//auth_2.addEventListener("click", process);
+
+--------------------------------------------------------------------------------------------
+
+<!--
+David Balladares
+Front End Developer
+Student Main HTML
+-->
+
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Student Main</title>
+    <link href="https://fonts.googleapis.com/css?family=Manjari&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="shortcut icon" href="#">
+  </head>
+  <body>
+  <div class="top">
+    <h1>Student Main Page</h1>
+    <h2 id="us">ID</h2>
+<div class="user loginLogo"></div>
+    <div class="nav">  <button onclick="logOut()">Log Out</button>   </div>
+    </div>
+      <hr>
+
+    <div class="leftStudent">
+      <h2>Take Exam</h2>
+      <table style="width:50%; margin-bottom: 10px; text-align: center; vertical-align: middle">
+        <col width="70%">
+        <col width="30%">
+        <tr>
+          <th>Exam Name</th>
+          <th>Status</th>
+        </tr>
+
+        <tbody id="takeTable">
+        </tbody>
+      </table>
+    </div>
+
+
+
+  	<div id="rightStudent">
+  		<h2>List Of Exams</h2>
+  				<table style="width:50%; margin-bottom: 10px; text-align: center; vertical-align: middle">
+  					<col width="50%">
+            <col width="20">
+  					<col width="30%">
+  					<tr>
+  						<th>Review Exam</th>
+              <th>Grade</th>
+  						<th>Status</th>
+  					</tr>
+
+            <tbody id="examTable">
+				  	</tbody>
+  				</table>
+
+  		</div>
+
+  <script src="../share.js" charset="utf-8"></script>
+  <script src="student.js" charset="utf-8"></script>
+  </body>
+</html>
+
+--------------------------------------------------------------------------------------------
+
+/*
+David Balladares
+Front End Developer
+Student Main JS
+*/
+
+window.onload=function(){
+	stuLogged();
+	examRequestList();
+	reviewExamRequest();
+};
+
+var examDB = [];
+
+function examRequestList(){
+	var data = '{"mode":"GetCE", "UCID":"'+ window.localStorage.getItem('user')+'"}';		//Exam to take
+	var request = new XMLHttpRequest();
+
+	request.open("POST", "https://web.njit.edu/~gdb6/btest/front.php", true);
+	request.setRequestHeader("Content-Type", "application/json; charset=UTF-8");		//json
+	request.send(data);
+
+	request.onload = function(){
+		if (request.status >= 200 && request.status < 400) {
+			var response = request.responseText;
+      if (response == "\n0 results\n") {
+				document.getElementById("examTable").innerHTML = "Nothing to Review Yet";
+			} else {
+/////////////////////////////////////////
+				//				var obj = {"ETitle": "Exam 1", "EID": "4"};		//testing
+	//	var response = JSON.stringify(obj);
+///////////////////////////////////////////////////
+			    takeExamDisplay(response);
+        }
+		} else {
+			alert("NO PHP response");
+		}
+	};
+}
+
+function takeExamDisplay(response){
+	var readyExam = JSON.parse(response);
+	var myExamName = readyExam.ETitle;
+	var myExamId = readyExam.EID;
+				console.log(myExamId);
+
+
+	var table = document.getElementById("takeTable");
+
+	var tr = document.createElement("tr");
+	var examNameCell = document.createElement("td");
+	var examName = document.createTextNode(myExamName);
+	examNameCell.appendChild(examName);
+
+	var edit_td = document.createElement("td");
+	edit_td.innerHTML = '<div><input type="button" value="Take" onClick="takeExam('+myExamId+', \''+myExamName+'\')"></div>';
+
+	tr.appendChild(examNameCell);
+	tr.appendChild(edit_td)
+	table.appendChild(tr);
+
+}
+
+
+
+function reviewExamRequest(){
+	var data = '{"mode":"GetGradedExam", "UCID":"'+ window.localStorage.getItem('user')+'", "Role": "student"}';		//student, instructor
+	var request = new XMLHttpRequest();
+
+	request.open("POST", "https://web.njit.edu/~gdb6/btest/front.php", true);
+	request.setRequestHeader("Content-Type", "application/json; charset=UTF-8");		//json
+	request.send(data);
+
+	request.onload = function(){
+		if (request.status >= 200 && request.status < 400) {
+			var response = request.responseText;
+      if (response == "\n0 results\n") {
+				document.getElementById("examTable").innerHTML = "Nothing to Review Yet";
+			} else {
+				//////////////////////////////////////////////////
+	//				var obj = {"Graded_Exam_List" :[ {"ETitle" : "testExamTitle" ,
+	//	"EID": "4" ,
+	//	"Grade" : "20"}, {"ETitle" : "Exam2test" ,
+	//	"EID": "5" ,
+	//	"Grade" : "90"}, {"ETitle" : "Exam3 test" ,
+	//	"EID": "6" ,
+	//	"Grade" : "100"} ]};
+	//			var response = JSON.stringify(obj);
+		///////////////////////////////////////////////////
+					reviewExamDisplay(response);
+			}
+
+
+		} else {
+			console.log("NO PHP response");
+		}
+	};
+}
+
+
+function reviewExamDisplay(response){
+  var examDB = JSON.parse(response);
+  var table = document.getElementById("examTable");
+	var examDB2 = examDB.Graded_Exam_List;
+
+	for (var i in examDB2) {
+		var tr = document.createElement("tr");
+
+		var exam_name_td = document.createElement("td");
+		exam_name_td.id = examDB2[i].ETitle;
+		var exam_name = document.createTextNode(examDB2[i].ETitle);
+		exam_name_td.appendChild(exam_name);
+
+		var exam_grade_td = document.createElement("td");
+		var exam_grade = document.createTextNode(examDB2[i].Grade);
+		exam_grade_td.appendChild(exam_grade);
+
+		var edit_td = document.createElement("td");
+		edit_td.innerHTML = '<div><input type="button" value="Results" onClick="reviewExam('+examDB2[i].EID+', \''+examDB2[i].ETitle+'\')"></div>';
+
+		tr.appendChild(exam_name_td);
+		tr.appendChild(exam_grade_td);
+		tr.appendChild(edit_td);
+		table.appendChild(tr);
+	}
+
+}
+
+
+function takeExam(examID, eName){
+	window.localStorage.setItem('UCID', window.localStorage.getItem('user'));
+	window.localStorage.setItem("EID", examID);
+	window.localStorage.setItem('examName', eName);
+	goTo('takeExam.html');
+}
+function reviewExam(examID, eName){
+	window.localStorage.setItem('UCID', window.localStorage.getItem('user'));
+	window.localStorage.setItem("EID", examID);
+	window.localStorage.setItem('examName', eName);
+	goTo('reviewExam.html');
+}
+
+--------------------------------------------------------------------------------------------
+
+<!--
+David Balladares
+Front End Developer
+Student Take Exam HTML
+-->
+
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Student Exam</title>
+    <link href="https://fonts.googleapis.com/css?family=Manjari&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="shortcut icon" href="#">
+  </head>
+  <body>
+  <div class="top">
+    <h1>Student Exam Page</h1>
+    <h2 id="us">ID</h2>
+<a href="student.html" title="Home"><div class="user"></div></a>
+			<div class="nav">  <button onclick="logOut()">Log Out</button>   </div>
+      </div>
+<hr>
+      <div class="container">
+
+        <div id="question-list">
+  <div class="question-container" style="height: 60px;">
+    <div class="container-title">
+      <div class="caption">
+        <span class="caption-title" style="font-size: 48px" id="exam_name"> ExamName </span>
+      </div>
+    </div>
+  </div>
+        </div>
+
+  <div>
+    <form>
+      <div style="text-align: center;">
+        <input type="button" value="Submit" onClick="submitExam()">
+      </div>
+    </form>
+  </div>
+  <div style="text-align: right; font-size: 2em;" id="status">Status</div>
+
+      </div>
+
+
+  <script src="takeExam.js" charset="utf-8"></script>
+  <script src="../share.js" charset="utf-8"></script>
+  </body>
+</html>
+
+--------------------------------------------------------------------------------------------
+
+/*
+David Balladares
+Front End Developer
+Student Take Exam JS
+*/
+
+var examName ="";
+var username ="";
+var question_ids = [];
+var questionDB = [];
+
+window.onload=function(){
+	stuLogged();
+							//examName = "Exam 1";
+							//examId = "4";
+							//username = "gdb6";
+	username = window.localStorage.getItem('user');
+	examId = window.localStorage.getItem('EID');
+	examName = window.localStorage.getItem('examName');
+	callExamQuestions(examId, username);
+	document.getElementById('exam_name').innerHTML = examName;
+};
+
+function callExamQuestions(examName, username){
+
+	var data = '{"mode":"GetExam", "UCID":"'+username+'", "EID": "'+examId+'"}';
+	var request = new XMLHttpRequest();
+	//console.log(data);
+
+	request.open('POST', 'https://web.njit.edu/~gdb6/btest/front.php', true);
+	request.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');		//x-www-form-urlencoded
+	request.send(data);
+
+
+	request.onload = function() {
+		if (request.status >= 200 && request.status < 400) {
+			var response = request.responseText;
+			console.log(response);
+			///////////////////////////////////////////////
+//			var obj = {"Exam_Question" :[ {"QID" : 40 ,
+//"Title" : "samefinder" ,
+//"Problem" : "Create a Python function that compares two variables and returns true if they are the same" ,
+//"Points" : 10 } , {"QID" : 39 ,
+//"Title" : "pyadder" ,
+//"Problem" : "Create a Python function that adds x and y and return the sum" ,
+//"Points" : 10 } , {"QID" : 41 ,
+//"Title" : "differencefinder" ,
+//"Problem" : "Create a Python function that compares two variables and returns true if they are different" ,
+//"Points" : 10 } , {"QID" : 42 ,
+//"Title" : "pymult" ,
+//"Problem" : "Create a Python function that multiplies two variables by each other and returns the product" ,
+//"Points" : 10 } ]};
+//		var response = JSON.stringify(obj);
+
+			///////////////////////////////////////////////
+			displayQuestions(response);
+		} else {
+			console.log("NO PHP response")
+		}
+	};
+}
+
+function displayQuestions(response){
+    questionDB = JSON.parse(response).Exam_Question;
+    console.log(questionDB);
+
+	for (var i in questionDB){
+		var actualID = questionDB[i].QID;
+		var examDiv = document.getElementById("question-list");
+		var new_div = document.createElement("div");
+		new_div.id = "question_wrapper_"+i;
+		new_div.innerHTML = `
+			<form>
+						<span id="question_name_`+i+`">`+questionDB[i]['Problem']+` </span>
+						<span id ="point_worth_`+i+`"> <h4>Points: `+questionDB[i]['Points']+`</h4></span>
+
+				<div class="question-body">
+						<h4 id="question_id_`+i+`"> Function Name: `+questionDB[i]['Title']+` </h4>
+
+						<h4> Your Answer: </h4>
+							<textarea rows="16" cols="70" class="answer" id="student_answer_`+i+`"></textarea>
+				</div>
+			</form>
+<hr>
+							`
+		examDiv.appendChild(new_div);
+		question_ids.push(actualID);
+	}
+ //
+ 
+}
+
+function submitExam() {
+if (confirm("Are you sure?")) {
+	var flag = false
+
+	for (var i in question_ids){
+		if(String(document.getElementById("student_answer_"+i).value)==""){
+			flag = true;
+			break;
+		}
+	}
+	if(flag == true){
+		document.getElementById("status").innerHTML = "Please Answer ALL Questions Before Submitting";
+	} else{
+
+
+		var array= {
+		"UCID": username,
+		"etitle": examName,
+		};
+		for(var j in question_ids){
+			var id = question_ids[j];
+			var answer = document.getElementById("student_answer_"+j).value;
+			array = {
+				"UCID": username,
+				"EID": examId,
+				"Title": questionDB[j]['Title'],
+				"QID":questionDB[j]['QID'],
+				"SAnswer":answer,
+				"QPoints":questionDB[j]['Points']
+				}
+
+				console.log(array);
+			fields = JSON.stringify(array);
+			storeAnswers(fields);
+			}
+
+		}
+  }
+}
+
+function storeAnswers(fields){
+
+	var data = fields;
+
+	var request = new XMLHttpRequest();
+
+	request.open('POST', 'https://web.njit.edu/~jw532/miAutoGrader.php', true);			//midAutograder
+	request.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');				//x-www-form-urlencoded
+	request.send(data);
+
+	request.onload = function() {
+		if (request.status >= 200 && request.status < 400) {
+			var response = request.responseText;
+			document.getElementById("status").innerHTML = "<center>** Submitted! Please go back to your Home Page **</center>";
+      document.querySelectorAll("input")[0].disabled = true;
+			console.log(response)
+		} else {
+			console.log("NO PHP response")
+		}
+	};
+
+      setTimeout(sendExam, 1000);
+
+}
+
+function sendExam(){
+	console.log("Sending finished Exam");
+	var data = '{"mode":"GradeExam", "UCID":"'+username+'", "EID": "'+examId+'"}';
+	var request = new XMLHttpRequest();
+	request.open("POST", "https://web.njit.edu/~gdb6/btest/front.php", true);
+	request.setRequestHeader("Content-Type", "application/json");
+	request.send(data);
+request.onload = function(){
+	if (request.status >= 200 && request.status < 400) {
+		var response = request.responseText;
+		console.log(response);
+	} else {
+		console.log("NO PHP response");
+		}
+	};
+}
+
+--------------------------------------------------------------------------------------------
+
+<!--
+David Balladares
+Front End Developer
+Student Review Exam HTML
+-->
+
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Review Exam</title>
+    <link href="https://fonts.googleapis.com/css?family=Manjari&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="shortcut icon" href="#">
+  </head>
+  <body>
+    <div class="top">
+		
+			<h1 id="title">Review Exam</h1>
+      <h2 id="us">ID</h2>
+<a href="student.html" title="Home"><div class="user"></div></a>
+			<div class="nav">  <button onclick="logOut()">Log Out</button>   </div>
+	
+	</div>
+  <hr>
+
+
+  <div id="question-list">
+		<div class="question-container" style="height: 60px;">
+			<div class="container-title">
+				<div class="caption">
+					<span class="caption-title" style="font-size: 48px" id="exam_name"> Exam </span>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+
+  <script src="../share.js" charset="utf-8"></script>
+  <script src="reviewExam.js" charset="utf-8"></script>
+</body>
+
+</html>
+
+--------------------------------------------------------------------------------------------
+
+/*
+David Balladares
+Front End Developer
+Student Review Exam JS 
+*/
+
+
+var examName ="";
+var studentName ="";
+var question_ids = [];
+var questionDB = [];
+
+window.onload = function(){
+	stuLogged();
+	examName = window.localStorage.getItem('examName');
+				//examName = "Exam 1";
+				//studentName = "gfn4";
+				//examId = "4";
+	studentName = window.localStorage.getItem('UCID');
+	examId = window.localStorage.getItem('EID');
+	teacherReview(studentName, examId);
+	document.getElementById('exam_name').innerHTML = examName;
+};
+
+
+
+function displayExam(response){
+
+	var questionDB = JSON.parse(response).Answer_List;
+	console.log(questionDB);
+
+	for (var i in questionDB) {
+		var exam_node = document.getElementById("question-list");
+		var new_div = document.createElement("div");
+		new_div.id = "question_wrapper_"+i;
+
+		if (questionDB[i]['Comments']==null){
+    questionDB[i]['Comments'] = "";
+    }
+
+		new_div.innerHTML =  `
+
+			<form>
+			<div class="container-title">
+				<div class="caption">
+					<span class="caption-title" id="question_name_`+i+`">`+questionDB[i]['Problem']+`</span>
+					<p>Question ID: `+questionDB[i]['QID']+`</p>
+					<span class="caption-explain" id="point_worth_`+i+`"> Points: </span>
+					<input type="text" disabled id="student_score_`+i+`" style="width: 20px;" value=`+questionDB[i]['Points']+`><span>/`+questionDB[i]['Max_Points']+`</span>
+				</div>
+			</div>
+
+			<div class="review-body">
+				<div class="answerbox">
+					<h4>  Student Answer: </h4>
+					<div>
+						<textarea rows="16" cols="70" disabled class="reviewanswer" id="student_answer_`+i+`">`+questionDB[i]['Answer']+`</textarea>
+					</div>
+				</div>
+				<div class="teacherNotes">
+					<h4>  Feedback: </h4>
+					<textarea disabled class="teacheranswer" id="teacher_notes_`+i+`">`+questionDB[i]['Feedback']+`</textarea>
+				</div>
+				<div class="autoNotes">
+					<table>
+						<thead>
+							<tr>
+								<th>Auto Grading Notes</th>
+							</tr>
+						</thead>
+						<tbody id="mid_grade_`+i+`">
+						</tbody>
+					</table>
+				</div>
+			</div>
+			<hr>
+			</form>
+
+				`;
+		exam_node.appendChild(new_div);
+		question_ids.push(i);
+
+// EXAM GRADING NOTES
+		var table = document.getElementById("mid_grade_"+i);
+		var notes = questionDB[i]['Comments'].split(";");			//midAutoGrading
+
+		for(var j in notes){
+			var tr = document.createElement("tr");
+			var autoNotes_td = document.createElement("td")
+			var autoNotes = document.createTextNode(notes[j]);
+			autoNotes_td.id="note_"+j;
+      autoNotes_td.appendChild(autoNotes);
+			tr.appendChild(autoNotes_td);
+			table.appendChild(tr);
+		}
+
+	}
+
+}
+
+
+function teacherReview(username, examId){
+
+	var data = '{"mode":"GetAns", "UCID":"'+username+'" ,"EID":'+examId+'}';
+	var request = new XMLHttpRequest();
+	console.log(data);
+
+	request.open("POST", "https://web.njit.edu/~gdb6/btest/front.php", true);
+	request.setRequestHeader("Content-Type", "application/json; charset=UTF-8");			//x-www-form-urlencoded
+	request.send(data);
+
+	request.onload = function() {
+		if (request.status >= 200 && request.status < 400) {
+			var response = request.responseText;
+
+			displayExam(response);
+		} else {
+			console.log("No PHP response")
+		}
+	};
+}
+
+--------------------------------------------------------------------------------------------
+
+<!--
+David Balladares
+Front End Developer
+Instructor Main HTML
+-->
+
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Instructor</title>
+    <link href="https://fonts.googleapis.com/css?family=Manjari&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="shortcut icon" href="#">
+  </head>
+  <body>
+  <div class="top">
+    <h1>Professor Main Page</h1>
+    <h2 id="us">ID</h2>
+    <div class="user loginLogo"></div>
+<div class="nav">
+  <button type="button" id="btnQ">Create A Question</button>
+  <button type="button" id="btnE">Create Exam</button>
+  <button onclick="logOut()">Log Out</button>
+  </div>
+  </div>
+  <hr>
+
+<h2> Summary</h2>
+
+<div class="wrapper">
+  <table style="width:100%; margin-bottom: 10px;">
+   
+
+					<tr>
+						<th>Exam name</th>
+						<th>Autograde Score</th>
+						<th>Review</th>
+					</tr>
+
+          <tbody id="examTable">
+
+          </tbody>
+
+			</table>
+</div>
+ 
+
+
+
+<script src="../share.js" charset="utf-8"></script>
+<script src="instructor.js" charset="utf-8"></script>
+  </body>
+</html>
+
+--------------------------------------------------------------------------------------------
+
+/*
+David Balladares
+Front End Developer
+Instructor Main JS
+*/
+
+window.onload=function(){
+	teachLogged();
+	examRequest();
+};
+
+var createQu = document.getElementById("btnQ");
+createQu.addEventListener("click", function(){
+  var page = "createQuestion.html";
+  goTo(page);
+});
+
+var createEx = document.getElementById("btnE");
+createEx.addEventListener("click", function(){
+  var page2 = "createExam.html";
+  goTo(page2);
+});
+
+var examDB = [];
+
+function examRequest(){
+  var data = '{"mode":"GetGradedExam", "UCID":"'+ window.localStorage.getItem('user')+'", "Role": "instructor"}';
+  var ajax = new XMLHttpRequest();
+//alert(data);
+  ajax.open("POST", "https://web.njit.edu/~gdb6/btest/front.php", true);
+  ajax.setRequestHeader("Content-type", "application/json");		//x-www-form-urlencoded
+	ajax.send(data);
+
+  ajax.onload = function(){
+    if (ajax.status >= 200 && ajax.status < 400) {
+      var response = ajax.responseText;
+      if (response == "\n0 results in i\n") {
+				document.getElementById("examTable").innerHTML = "Nothing to Review Yet";
+			} else {
+			///////////////////////////////////
+//			var obj = {"Graded_Exam_List" :[ {"ETitle" : "testExam" ,
+//"EID": "4" ,
+//"Grade" : "20"} ]};
+//		var response = JSON.stringify(obj);
+			//////////////////////////////////
+
+			console.log(response);
+      examDisplay(response);
+}
+    } else {
+			console.log("NO PHP response")
+		}
+  };
+}
+
+
+function examDisplay(response){
+  var examDB = JSON.parse(response).Graded_Exam_List;
+  var examT = document.getElementById("examTable");
+
+  for (var i in examDB) {
+		var tr = document.createElement("tr");
+
+		var exam_name_td = document.createElement("td");
+		var exam_name = document.createTextNode(examDB[i].ETitle);
+		exam_name_td.appendChild(exam_name);
+		exam_name_td.id = "test_id_"+i;
+
+		var autograde = document.createElement("td");
+		var exam_grade = document.createTextNode(examDB[i].Grade);
+		autograde.appendChild(exam_grade);
+
+
+		var review_td = document.createElement("td");
+		review_td.innerHTML = '<div"><input type="button" value="Review" onClick="reviewExams('+examDB[i].EID+', \''+examDB[i].UCID+'\', '+i+')"></div>'
+
+		tr.appendChild(exam_name_td);
+		tr.appendChild(autograde)
+		tr.appendChild(review_td);
+
+		examT.appendChild(tr);
+  }
+}
+
+
+function reviewExams(examID, studID, myId){
+	window.localStorage.setItem('UCID', studID);
+	window.localStorage.setItem("EID", examID);
+	window.localStorage.setItem('examName', document.getElementById("test_id_"+myId).innerHTML);
+	goTo("modify.html");
+}
+
+--------------------------------------------------------------------------------------------
+
+<!--
+David Balladares
+Front End Developer
+Instructor CreateQuestion HTML
+-->
+
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Exam</title>
+    <link href="https://fonts.googleapis.com/css?family=Manjari&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="shortcut icon" href="#">
+  </head>
+  <body>
+	<div class="top">
+    <h1>Create A Question</h1>
+    <h2 id="us">userNameDisplay</h2>
+              <a href="instructor.html" title="Home"><div class="user"></div></a>
+            <div class="nav">
+              <button type="button" id="btnQ">Create A Question</button>
+              <button type="button" id="btnE">Create Exam</button>
+              <button onclick="logOut()">Log Out</button>
+            </div>
+</div>
+              <hr>
+	<div id="body">
+
+				<h2>Create a New Question</h2>
+
+				<form name='createQForm' id="createQForm" onSubmit="submitQuestion(event)">
+
+				  <div id="titleDiv">
+							<label>Title/Function Name: <input type="text" name="qtitle" id="qtitle" placeholder="Function Name"></label>
+          </div><br>
+
+					<div id="problDiv">
+							<label>Problem:<br> <textarea rows="6" cols="70" name="problem" id="problem" placeholder="Enter Problem"></textarea></label>
+					</div>
+
+
+					<div id="catDiv">
+							<label>Category:
+								<select name="cat" id="cat">
+									<option value="arrays">Arrays</option>
+									<option value="logic">Logic</option>
+									<option value="strings">Strings</option>
+								</select>
+              </label>
+					</div><br>
+
+
+					<div id="difDiv">
+							<label>Difficulty:
+								<select name"difficulty" id="difficulty">
+									<option value="easy">Easy</option>
+									<option value="medium">Medium</option>
+									<option value="hard">Hard</option>
+								</select>
+              </label>
+					</div><br>
+
+
+          <div id="constDiv">
+							<label>Constrains:
+								<select name"constrain" id="constrain" onChange="changetextbox()">
+                  <option value="" selected></option>
+									<option value="for">For Loop</option>
+									<option value="while">While Loop</option>
+									<option value="print">Print Value</option>
+								</select>
+              </label>
+              <input id="penalty" type="text" name="" value="" placeholder="Penalty points">
+					</div><br>
+
+
+        <div id="case1">
+            <label>Inputs: <input type="text" name="tc1var1" id="tc1var1" placeholder="Enter values" ></label>
+	              <div>&nbsp;</div>
+								<div style="width: 40%; float:right;">
+									<input type="text" name="tc1answer" id="tc1answer" placeholder="Result">
+								</div>
+                <div>&nbsp;</div><br>
+        </div>
+<hr>
+        <div id="case2">
+            <label>Inputs: <input type="text" name="tc2var1" id="tc2var1" placeholder="Enter values" ></label>
+
+								<div style="width: 5%">&nbsp;</div>
+								<div style="width: 40%; float:right;">
+									<input type="text" name="tc2answer" id="tc2answer" placeholder="Result">
+								</div>
+								<div style="width: 5%">&nbsp;</div><br>
+        </div>
+<hr>
+        <div id="case3">
+            <label>Inputs: <input type="text" name="tc3var1" id="tc3var1" placeholder="Enter values" ></label>
+
+								<div style="width: 5%">&nbsp;</div>
+								<div style="width: 40%; float:right;">
+									<input type="text" name="tc3answer" id="tc3answer" placeholder="Result">
+								</div>
+								<div style="width: 5%">&nbsp;</div><br>
+        </div>
+<hr>
+        <div id="case4">
+            <label>Inputs: <input type="text" name="tc4var1" id="tc4var1" placeholder="Enter values" ></label>
+
+								<div style="width: 5%">&nbsp;</div>
+								<div style="width: 40%; float:right;">
+									<input type="text" name="tc4answer" id="tc4answer" placeholder="Result">
+								</div>
+								<div style="width: 5%">&nbsp;</div><br>
+        </div>
+<hr>
+        <div id="case5">
+            <label>Inputs: <input type="text" name="tc5var1" id="tc5var1" placeholder="Enter values" ></label>
+
+								<div style="width: 5%">&nbsp;</div>
+								<div style="width: 40%; float:right;">
+									<input type="text" name="tc5answer" id="tc5answer" placeholder="Result">
+								</div>
+								<div style="width: 5%">&nbsp;</div><br>
+        </div>
+<hr>
+        <div id="case6">
+            <label>Inputs: <input type="text" name="tc6var1" id="tc6var1" placeholder="Enter values" ></label>
+
+								<div style="width: 5%">&nbsp;</div>
+								<div style="width: 40%; float:right;">
+									<input type="text" name="tc6answer" id="tc6answer" placeholder="Result">
+								</div>
+								<div style="width: 5%">&nbsp;</div><br>
+        </div>
+<hr>
+
+						<input type="submit" value="Create Question">
+				</form>
+
+		<h2 id ="status">Create Status</h2>
+	</div>
+
+
+<script src="instructor.js" charset="utf-8"></script>
+<script src="question.js" charset="utf-8"></script>
+<script src="../share.js" charset="utf-8"></script>
+
+</body>
+
+</html>
+
+--------------------------------------------------------------------------------------------
+
+/*
+David Balladares
+Front End Developer
+Instructor CreateQuestion JS
+*/
+
+window.onload = function(){
+	teachLogged();
+	document.getElementById("penalty").disabled = true;
+};
+
+function changetextbox(){
+	var constrainCheck = document.getElementById("constrain").value;
+	var penaltyText = document.getElementById("penalty");
+	if (constrainCheck == "") {
+		penaltyText.value = "";
+		penaltyText.disabled = true;
+	} else{
+		penaltyText.disabled = false;
+	}
+}
+
+document.querySelector("#createQForm").addEventListener("submit", function(e){
+	e.preventDefault();
+
+});
+
+function submitQuestion(){
+	var title = document.getElementById("qtitle").value;
+	var problem = document.getElementById("problem").value;
+
+	var tc1Val1 = document.getElementById("tc1var1").value;
+	var result1 = document.getElementById("tc1answer").value;
+
+	var tc2Val1 = document.getElementById("tc2var1").value;
+	var result2 = document.getElementById("tc2answer").value;
+
+	var tc3Val1 = document.getElementById("tc3var1").value;
+	var result3 = document.getElementById("tc3answer").value;
+
+	var tc4Val1 = document.getElementById("tc4var1").value;
+	var result4 = document.getElementById("tc4answer").value;
+
+	var tc5Val1 = document.getElementById("tc5var1").value;
+	var result5 = document.getElementById("tc5answer").value;
+
+	var tc6Val1 = document.getElementById("tc6var1").value;
+	var result6 = document.getElementById("tc6answer").value;
+
+	var catObj = document.getElementById("cat");
+	var category = catObj.options[catObj.selectedIndex].value;
+
+	var constObj = document.getElementById("constrain");
+	var constrain = constObj.options[constObj.selectedIndex].value;
+
+
+	var difficultyObj = document.getElementById("difficulty");
+	var difficulty =  difficultyObj.options[difficultyObj.selectedIndex].value;
+
+	var penalty = document.getElementById("penalty").value;
+
+//	var array = '{"mode":"CreateQuest", "qtitle":"'+title+'", "problem":"'+problem+'", "tc1var1":"'+tc1Val1+'", "tc2var1":"'+tc2Val1+'", "tc3var1":"'+tc3Val1+'", "tc4var1":"'+tc4Val1+'", "tc5var1":"'+tc5Val1+'", "tc6var1":"'+tc6Val1+'", "tc1answer":"'+result1+'", "tc2answer":"'+result2+'", "tc3answer":"'+result3+'", "tc4answer":"'+result4+'", "tc5answer":"'+result5+'", "tc6answer":"'+result6+'", "diffculty":"'+difficulty+'", "cat":"'+category+'", "constrain":"'+constrain+'", "penalty":"'+penalty+'"}';
+ 
+ var array = {"mode":"CreateQuest", "qtitle":title, "problem":problem, "tc1var1":tc1Val1, "tc2var1":tc2Val1, "tc3var1":tc3Val1, "tc4var1":tc4Val1, "tc5var1":tc5Val1, "tc6var1":tc6Val1, "tc1answer":result1, "tc2answer":result2, "tc3answer":result3, "tc4answer":result4, "tc5answer":result5, "tc6answer":result6, "diffculty":difficulty, "cat":category, "constrain":constrain, "penalty":penalty};
+ 
+ 	//array = array.replace(/\\/g, "\\u005C").replace(/"/g, '\\u0022').replace(/'/g, "\\u0027");
+  array = JSON.stringify(array);
+  //array = JSON.stringify(String(array));
+	addQuestion(array);
+}
+
+
+function addQuestion(questionInfo){
+	var data = questionInfo;
+ 	//data = data.replace("\"", "\\\"");
+
+	var ajax = new XMLHttpRequest();
+		//	alert(data);
+	ajax.open("POST", "https://web.njit.edu/~gdb6/btest/front.php", true);
+	ajax.setRequestHeader("Content-type", "application/json; charset=UTF-8");   //json
+	ajax.send(data);
+
+	ajax.onload = function(){
+ 		if (ajax.status >=200 && ajax.status < 400) {
+			var response = ajax.responseText;
+			console.log("status: " + response);
+			document.getElementById("status").innerHTML = "Question Created Succesfully";
+			var formReset = document.getElementById("createQForm");
+			formReset.reset();
+			//addStatus(response);
+		} else {
+			console.log("NO PHP response");
+			document.getElementById("status").innerHTML = "Something went Wrong, Try Again";
+		}
+	};
+}
+
+
+//function addStatus(response){
+//	var res = response;
+//	if(res =="question rejected"){
+//		document.getElementById("status").innerHTML = "Failed to Create this Question";
+//	} else if(res=="question inserted"){
+//		document.getElementById("status").innerHTML = "Success insertion";
+//	} else {
+//		document.getElementById("status").innerHTML = "Something went Wrong, Try Again";
+//	}
+//}
+
+--------------------------------------------------------------------------------------------
+
+<!--
+David Balladares
+Front End Developer
+Instructor CreateExam HTML
+-->
+
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Exam</title>
+    <link href="https://fonts.googleapis.com/css?family=Manjari&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="shortcut icon" href="#">
+  </head>
+  <body>
+  <div class="top">
+
+    <h1>Create Exam</h1>
+    <h2 id="us">userNameDisplay</h2>
+      <a href="instructor.html" title="Home"><div class="user"></div></a>
+      <div class="nav">
+      <button type="button" id="btnQ">Create A Question</button>
+      <button type="button" id="btnE">Create Exam</button>
+      <button onclick="logOut()">Log Out</button>
+      </div>
+      </div>
+      <hr>
+	<div class="examBody">
+      <h2 id="status">Please select questions to create an exam</h2>
+
+    <form  id="srch" onSubmit="searchTool()">
+     <!--  <input id="myDiffInput" type="text" placeholder="Filter by Difficulty" onkeyup="diffSearch()">
+     <input id="myCatInput" type="text"  placeholder="Filter by Category" onkeyup="catSearch()">  -->
+     <input id="myProbInput" type="text"  placeholder="Filter by Problem" onkeyup="probSearch()">
+
+                             <select name="select" id="catt" onchange="searchTool()">
+                               <option value="" selected>Category</option>
+                               <option value="logic">Logic</option>
+                               <option value="strings">String</option>
+                               <option value="arrays">Array</option>
+                             </select>
+
+                            <select name="select" id="diff" onchange="searchTool()">
+                              <option value="" selected>Difficulty</option>
+                              <option value="hard">Hard</option>
+                              <option value="medium">Medium</option>
+                              <option value="easy">Easy</option>
+                            </select>
+   </form><br>
+
+<div class="left">
+
+        <form name='createQForm' id="addQuestion" onSubmit="submitExam(event)">
+
+          <div id="titleDiv">
+              <label>Exam Title: <input style="margin-bottom: 8px" type="text" name="Title" id="Title" placeholder="Exam Name"></label>
+          </div>
+          
+          <table class="fixed_header">
+
+            <col width="5%">
+            <col width="10%">
+            <col width="10%">
+            <col width="10%">
+            <col width="55%">
+            <col width="10%">
+            <thead>
+            						<tr>
+            							<th>ID</th>
+            							<th>Title/Function</th>
+            							<th>Difficulty</th>
+            							<th>Category</th>
+                          <th>Problem</th>
+            							<th>Add To Exam</th>
+            						</tr>
+            </thead>
+          </table>
+          
+          <div style="height:25em; overflow:auto;">
+          <table style="width:100%; margin-bottom: 10px;" id="question_table">
+            <col width="10%">
+						<col width="10%">
+						<col width="10%">
+						<col width="10%">
+            <col width="50%">
+						<col width="10%">
+						<tr>
+							<th>ID</th>
+							<th>Title/Function</th>
+							<th>Difficulty</th>
+							<th>Category</th>
+              <th>Problem</th>
+							<th>Add To Exam</th>
+						</tr>
+          </table>
+          </div>
+</div>
+
+<div class="right">
+
+          <div id="question-block">
+						<div class="question-block">
+							<div style="width: 100%; text-align:center; margin-bottom: 20px;">
+								<h2>Added Questions List</h2>
+							</div>
+						</div>
+					</div>
+
+          <h3 id="createStatus"></h3>
+          <input class="submit" style="width: 8em;" type="submit" value="Create">
+
+      </form>
+</div>
+</div>
+
+
+<script src="instructor.js" charset="utf-8"></script>
+<script src="exam.js" charset="utf-8"></script>
+<script src="../share.js" charset="utf-8"></script>
+</body>
+
+</html>
+
+--------------------------------------------------------------------------------------------
+
+/*
+David Balladares
+Front End Developer
+Instructor Create Exam JS
+*/
+
+var random = Math.floor(Math.random()*100);
+
+window.onload=function(){
+	teachLogged();
+	questionDBRequest();
+};
+
+var question_count = 0;
+var questionDB = {};
+var questions_added =[];
+//var baseURL = "https://web.njit.edu/~gdb6/bLogTest/";
+//var baseURL = "https://web.njit.edu/~gfn4/Projectdb/";
+
+function questionDBRequest(){
+	var data = '{"mode":"GetQuest"}';
+	var request = new XMLHttpRequest();
+
+	request.open("POST", 'https://web.njit.edu/~gdb6/btest/front.php', true); 		//baseURL+'dbGetQuestion.php'
+	request.setRequestHeader("Content-Type", "application/json; charset=UTF-8");   //x-www-form-urlencoded
+	request.send(data);
+
+	request.onload = function() {
+		if (request.status >= 200 && request.status < 400) {
+			var response = request.responseText;
+			displayQDB(response);
+		} else {
+			console.log("failed to recieve questionBank")
+		}
+	};
+}
+
+function displayQDB(response){
+	questionDB = JSON.parse(response);
+	var table = document.getElementById("question_table");
+  table.innerHTML="";
+	var questionDB2= questionDB.Question_List;
+	for (var i in questionDB2){
+
+		var tr = document.createElement("tr");
+		tr.classList.add("questionRow");
+
+		var question_id_td = document.createElement("td");
+		var question_id = document.createTextNode(i);
+		question_id.id = "id_" + questionDB2[i];
+		question_id_td.appendChild(question_id);
+
+		var questionNameCell = document.createElement("td");
+		var question_name = document.createTextNode(questionDB2[i].Title);
+		questionNameCell.appendChild(question_name);
+
+		var difficultyCell = document.createElement("td");
+		difficultyCell.classList.add("diff_class");
+		var difficulty = document.createTextNode(questionDB2[i].Difficulty);
+		difficultyCell.appendChild(difficulty);
+
+		var categoryCell = document.createElement("td");
+		categoryCell.classList.add("cat_class");
+		var topic = document.createTextNode(questionDB2[i].Cat);
+		categoryCell.appendChild(topic);
+
+		var problemCell = document.createElement("td");
+		problemCell.classList.add("problem_class");
+		var problem = document.createTextNode(questionDB2[i].Problem);
+		problemCell.appendChild(problem);
+
+		var addcell = document.createElement("td");
+		addcell.innerHTML = '<div class="text-center" ><input type="button" value="Add" onClick="addQuestion('+i+')" id="addingQuestion'+i+'"></div>'
+
+		tr.appendChild(question_id_td);
+		tr.appendChild(questionNameCell);
+		tr.appendChild(difficultyCell);
+		tr.appendChild(categoryCell);
+		tr.appendChild(problemCell);
+		tr.appendChild(addcell);
+
+		table.appendChild(tr);
+	}
+}
+
+// function XmmlRequestFunction(data, callback) {
+// 	var request = new XMLHttpRequest();
+//
+// 	request.open("POST", "https://web.njit.edu/~gdb6/btest/front.php", true);
+// 	request.setRequestHeader("Content-Type", "application/json; charset=UTF-8");
+// 	request.send(data);
+//
+// 	if (request.status >= 200 && request.status < 400) {
+// 		var response = request.responseText;
+// 		console.log(response)
+// 		callback(response);
+// 	} else {
+// 		console.log("NO PHP response")
+//
+// 	}
+//
+// }
+
+function submitExam(event){
+	event.preventDefault();
+ 
+ 	var examtitle = document.getElementById("Title").value;
+	var examCStatus = document.getElementById("createStatus");
+
+	if(question_count == 0){
+		document.getElementById("status").innerHTML = "Nothing slected. Please select questions to Add to your exam";
+		examCStatus.innerHTML = "** See Error Message Above **";
+	}
+		else if (examtitle == "") {
+			document.getElementById("status").innerHTML = "Please enter an EXAM TITLE to continue";
+			examCStatus.innerHTML = "** See Error Message Above **";
+		} 
+
+   else {
+			document.getElementById("status").innerHTML = "";
+			examCStatus.innerHTML = "Creating Exam...";
+			createExamRequest(examtitle);
+
+			}
+}
+
+function addQuestion(id){
+	var actualID = questionDB.Question_List[id].QID;
+	var question_name = questionDB.Question_List[id].Title;
+
+	document.getElementById("addingQuestion"+id).disabled = true;
+	question_count = question_count + 1;
+	var questionBlock = document.getElementById("question-block")
+	var new_div = document.createElement("div")
+	new_div.classList.add("question-block")
+	new_div.id = "listId"+id
+
+	new_div.innerHTML = `<div>
+	<div><label id="listId`+id+`">Title`+question_count+`: `+question_name+`</label></div>
+	<div><label id="label_points_`+id+`">Points: </label><input style ="width: 25px" type="text" id="points_`+actualID+`"></input></div>
+	<div style="margin-top: `+5+`px"> <label><input onClick="deleteQuestion(`+id+`)" type="button" value="Remove" style="height: 20px; width: 25%"></label></div>
+											</div><hr>`
+
+	questions_added.push(actualID);
+	questionBlock.appendChild(new_div);
+
+	document.getElementById("status").innerHTML = "Great! You are now creating an exam";
+	document.getElementById("createStatus").innerHTML = "Adding Questions...";
+}
+
+function remove(array, element) {
+    var index = array.indexOf(element);
+		array.splice(index, 1);
+}
+
+function deleteQuestion(id){
+
+	var deleteFromList = document.getElementById('listId'+id)
+	deleteFromList.remove()
+	document.getElementById("addingQuestion"+id).disabled = false;
+	var arr = questionDB.Question_List[id].QID;
+
+	question_count = question_count - 1;
+	remove(questions_added, arr);
+}
+
+
+function createExamRequest(examtitle){
+
+var data = '{"mode":"CreateExam","etitle": "'+examtitle+'"}';
+
+
+var request = new XMLHttpRequest();
+
+request.open("POST", "https://web.njit.edu/~gdb6/btest/front.php", true);
+request.setRequestHeader("Content-Type", "application/json"); //x-www-form-urlencoded
+request.send(data);
+
+request.onload = function() {
+	if (request.status >= 200 && request.status < 400) {
+		var response = request.responseText;
+		console.log(response);
+		sendQuestions();
+	} else {
+		console.log("No PHP response 1");
+		}
+	};
+
+	//XmmlRequestFunction(data, sendQuestions);
+}
+
+
+function sendQuestions(){
+for(var i in questions_added)	{
+var questID = questions_added[i];
+var num = parseFloat(i)+1;		//QID
+var points = document.getElementById("points_"+questID).value;
+
+var data = '{"mode":"AddEQ","QID":"'+questID+'","num":"'+num+'","grade":"'+points+'"}';
+//alert(data);
+
+var request = new XMLHttpRequest();
+
+request.open("POST", "https://web.njit.edu/~gdb6/btest/front.php", true);
+request.setRequestHeader("Content-Type", "application/json");
+request.send(data);
+
+if (request.status >= 200 && request.status < 400) {
+	var response = request.responseText;
+	console.log(response)
+	//assign();
+} else {
+	console.log("NO PHP response 2");
+	}
+}
+assign();
+}
+
+function assign(){
+	console.log("assign run");
+	var data = '{"mode":"AssignExam"}';
+	var request = new XMLHttpRequest();
+	request.open("POST", "https://web.njit.edu/~gdb6/btest/front.php", true);
+	request.setRequestHeader("Content-Type", "application/json");
+	request.send(data);
+
+	request.onload = function(){
+		if (request.status >= 200 && request.status < 400) {
+			var response = request.responseText;
+			document.getElementById("status").innerHTML = "Exam Successfully Created";
+			document.getElementById("createStatus").innerHTML = "Success!"
+			console.log(response);
+		} else {
+			console.log("NO PHP response");
+			}
+	};
+}
+
+function diffSearch(){
+  var input, filter, listing, txtValue, grid, p;
+  input = document.getElementById("myDiffInput");
+  filter = input.value.toUpperCase();
+  grid = document.getElementById("question_table");
+  questionTable = grid.getElementsByClassName("questionRow");
+
+  for (var i = 0; i < questionTable.length; i++) {
+    p = questionTable[i].getElementsByTagName("td")[2];
+    txtValue = p.textContent || p.innerText;
+    if (txtValue.toUpperCase().indexOf(filter)> -1) {
+      questionTable[i].style.display = "";
+
+    } else {
+      questionTable[i].style.display = "none";
+    }
+  }
+}
+
+function catSearch(){
+  var input, filter, listing, txtValue, grid, p;
+  input = document.getElementById("myCatInput");
+	filter = input.value.toUpperCase();
+  grid = document.getElementById("question_table");
+  questionTable = grid.getElementsByClassName("questionRow");
+
+	for (var i = 0; i < questionTable.length; i++) {
+    p = questionTable[i].getElementsByTagName("td")[3];
+    txtValue = p.textContent || p.innerText;
+    if (txtValue.toUpperCase().indexOf(filter)> -1) {
+      questionTable[i].style.display = "";
+
+    } else {
+      questionTable[i].style.display = "none";
+    }
+  }
+}
+
+function probSearch(){
+  var input, filter, listing, txtValue, grid, p;
+  input = document.getElementById("myProbInput");
+	filter = input.value.toUpperCase();
+  grid = document.getElementById("question_table");
+  questionTable = grid.getElementsByClassName("questionRow");
+
+	for (var i = 0; i < questionTable.length; i++) {
+    p = questionTable[i].getElementsByTagName("td")[4];
+    txtValue = p.textContent || p.innerText;
+    if (txtValue.toUpperCase().indexOf(filter)> -1) {
+      questionTable[i].style.display = "";
+
+    } else {
+      questionTable[i].style.display = "none";
+    }
+  }
+}
+
+
+
+document.getElementById("srch").addEventListener("submit", function(event){
+	event.preventDefault();
+	if (keyCode === 13) {
+		searchTool()
+	}
+});
+
+
+function searchTool(){
+	var catt = document.getElementById("catt").value;
+	var diff = document.getElementById("diff").value;
+
+	var filterData = '{"mode":"GetQuest","cat": \"'+catt+'\","diff": \"'+diff+'\"}';
+	console.log(filterData);
+
+if (catt == "" && diff == "") {
+	questionDBRequest();
+} else{
+	searchDBRequestion(filterData);
+}
+}
+
+function searchDBRequestion(filtdata){
+	var filterArray = filtdata;
+	var req = new XMLHttpRequest();
+
+	req.open("POST", 'https://web.njit.edu/~gdb6/btest/front.php', true); 		//baseURL+'dbGetQuestion.php'
+	req.setRequestHeader("Content-Type", "application/json; charset=UTF-8");   //x-www-form-urlencoded
+	req.send(filterArray);
+
+	req.onload = function() {
+		if (req.status >= 200 && req.status < 400) {
+			var res = req.responseText;
+			displayQDB(res);
+		} else {
+			console.log("failed to recieve questionBank")
+		}
+};
+}
+
+--------------------------------------------------------------------------------------------
+
+<!--
+David Balladares
+Front End Developer
+Instructor Modify/Grade Exam HTML
+-->
+
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Modify Exam</title>
+    <link href="https://fonts.googleapis.com/css?family=Manjari&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="shortcut icon" href="#">
+  </head>
+  <body>
+    <div class="top">
+			<h1 id="title">Edit Exam</h1>
+      <h2 id="us">ID</h2>
+      <a href="instructor.html" title="Home"><div class="user"></div></a>
+      <div class="nav">
+      <button type="button" id="btnQ">Create A Question</button>
+      <button type="button" id="btnE">Create Exam</button>
+      <button onclick="logOut()">Log Out</button>
+      </div>
+	</div>
+  <hr>
+
+
+  <div id="question-list">
+		<div class="question-container" style="height: 60px;">
+			<div class="container-title">
+				<div class="caption">
+					<span class="caption-title" style="font-size: 48px" id="exam_name"> Exam </span>
+				</div>
+			</div>
+		</div>
+	</div>
+
+  <form>
+		<div style="text-align: center;">
+			<input type="button" value="Update Exam" onClick="updateStudentExam()">
+		</div>
+     <div style="text-align: right; font-size: 2em;">
+          <span id='status'>Status</span>
+     </div>
+	</form>
+
+
+
+  <script src="instructor.js" charset="utf-8"></script>
+  <script src="../share.js" charset="utf-8"></script>
+  <script src="modify.js" charset="utf-8"></script>
+</body>
+
+
+</html>
+
+--------------------------------------------------------------------------------------------
+
+/*
+David Balladares
+Front End Developer
+Instructor Modify/Grade JS
+*/
+
+var examName ="";
+var studentName ="";
+var question_ids = [];
+var questionDB = [];
+
+window.onload=function(){
+	teachLogged();
+	examName = window.localStorage.getItem('examName');
+	examId = window.localStorage.getItem('EID');
+	studentName = window.localStorage.getItem('UCID');
+	callExamReview(studentName, examId);
+	document.getElementById('exam_name').innerHTML = examName;
+};
+
+function examDisplay(response){
+
+	var questionDB = JSON.parse(response).Answer_List;
+			console.log(questionDB);
+
+	for (var i in questionDB) {
+		var exam_node = document.getElementById("question-list");
+		var new_div = document.createElement("div");
+		new_div.id = "question_wrapper_"+i;
+		new_div.className="review-container";
+
+		new_div.innerHTML =  `
+
+			<form>
+			<div class="container-title">
+				<div class="caption">
+					<span class="caption-title" id="question_name_`+i+`">`+questionDB[i]['Problem']+`</span>
+					<span class="caption-explain" id="point_worth_`+i+`"> Points: </span>
+					<input type="text" id="student_score_`+i+`" style="width: 20px;" value=`+questionDB[i]['Points']+`><span>/`+questionDB[i]['Max_Points']+`</span>
+				</div>
+			</div>
+
+			<div class="review-body">
+				<div class="question">
+					<h4 id="question_id_`+i+`"> Function Title: `+questionDB[i]['Title']+` </h4>
+					<p>Question ID:</p>
+					<p id="question_`+i+`">`+questionDB[i]['QID']+`</p>
+				</div>
+				<div class="answerbox">
+					<h4>  Student Answer: </h4>
+					<div>
+						<textarea rows="16" cols="70" disabled class="reviewanswer" id="student_answer_`+i+`">`+questionDB[i]['Answer']+`</textarea>
+					</div>
+				</div>
+				<div class="teacherNotes">
+					<h4>  Feedback: </h4>
+					<textarea class="teacheranswer" id="teacher_notes_`+i+`">`+questionDB[i]['Feedback']+`</textarea>
+				</div>
+				<div class="autoNotes">
+					<table>
+						<thead>
+							<tr>
+								<th>Auto Grading Notes</th>
+							</tr>
+						</thead>
+						<tbody id="mid_grade_`+i+`">
+						</tbody>
+					</table>
+				</div>
+			</div>
+			</form>
+<hr>
+				`;
+		exam_node.appendChild(new_div);
+		question_ids.push(i);
+
+// EXAM GRADING NOTES From MID auto-exam
+		var table = document.getElementById("mid_grade_"+i);
+		var notes = questionDB[i]['Comments'].split(";");
+
+		for(var j in notes){
+			var tr = document.createElement("tr");
+			var autoNotes_td = document.createElement("td")
+			var autoNotes = document.createTextNode(notes[j]);
+			autoNotes_td.id="note_"+j;
+      autoNotes_td.appendChild(autoNotes);
+			tr.appendChild(autoNotes_td);
+			table.appendChild(tr);
+		}
+
+	}
+
+}
+
+function updateStudentExam(){
+	for (var i in question_ids){
+			var id = question_ids[i];
+			var questionId = document.getElementById("question_"+i).innerHTML;
+			var grade =  document.getElementById("student_score_"+id).value;
+			var teacherNotes = document.getElementById("teacher_notes_"+id).value;
+			var sAnswer = document.getElementById("student_answer_"+id).value;
+
+			array = {
+				"mode": "UpdateAns",
+				"UCID": studentName,
+				"EID": examId,
+				"QID": questionId,
+				"SAnswer": sAnswer,
+				"QPoints":grade,
+				"Feedback": teacherNotes
+				}
+
+			fields = JSON.stringify(array);
+      console.log(fields);
+			updateExamCall(fields);
+	}
+	setTimeout(sendFinalGrade, 1000);
+}
+
+
+function updateExamCall(fields){
+
+	var data = fields;
+	var request = new XMLHttpRequest();
+
+	request.open('POST', 'https://web.njit.edu/~gdb6/btest/front.php', true);
+	request.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
+	request.send(data);
+
+	request.onload = function() {
+		if (request.status >= 200 && request.status < 400) {
+			var response = request.responseText;
+          var res = JSON.parse(response);
+	      if(res.A_update == "Answer updated"){
+					document.getElementById("status").innerHTML = "Update Complete";
+	      } else {
+				document.getElementById("status").innerHTML = "Something Went Wrong, Please try Again";
+				console.log("NO PHP response")
+				}
+		};
+	}
+
+}
+
+function sendFinalGrade(){
+	console.log("send final grade run");
+	var data = '{"mode":"GradeFin", "EID": '+examId+', "UCID": \"'+studentName+'\"}';
+	var request = new XMLHttpRequest();
+	request.open("POST", "https://web.njit.edu/~gdb6/btest/front.php", true);
+	request.setRequestHeader("Content-Type", "application/json");
+	request.send(data);
+
+	request.onload = function(){
+		if (request.status >= 200 && request.status < 400) {
+			var response = request.responseText;
+			console.log(response);
+		} else {
+			console.log("NO PHP response, fail run");
+			}
+	};
+}
+
+
+function callExamReview(username, examId){
+
+	var data = '{"mode":"GetAns","UCID":"'+username+'","EID":"'+examId+'"}';
+	var request = new XMLHttpRequest();
+	console.log(data);
+
+	request.open('POST', 'https://web.njit.edu/~gdb6/btest/front.php', true);
+	request.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
+	request.send(data);
+
+	request.onload = function() {
+		if (request.status >= 200 && request.status < 400) {
+			var response = request.responseText;
+      console.log(response);
+
+			examDisplay(response);
+		} else {
+			console.log("NO PHP response")
+		}
+	};
+}
+
+--------------------------------------------------------------------------------------------
+
+/*
+David Balladares
+Front End Developer
+Share JS File LocalStorage(Instructor & Student)
+*/
+
+function logOut(){
+    window.localStorage.removeItem("user");
+    window.localStorage.removeItem("role");
+    window.location.replace("../login/login.html");
+    //alert("loggin out");
+}
+
+function stuLogged(){
+
+    var user = window.localStorage.getItem('user');
+    var role = window.localStorage.getItem('role');
+    console.log(user);
+    console.log(role);
+    if(role == null){
+         window.location.replace("../login/login.html");
+         }
+  
+    document.getElementById("us").innerHTML = "Hi! " + user;
+    //   console.log(us);
+    //   console.log(role);
+    //alert("im being called");
+}
+
+function teachLogged(){
+    var user = window.localStorage.getItem('user');
+    var role = window.localStorage.getItem('role');
+    console.log(user);
+    console.log(role);
+    if(role == null)
+         window.location.replace("../login/login.html");
+
+    document.getElementById("us").innerHTML = "Hi! " + user;
+}
+
+function goTo(page){
+    window.location.replace(page);
+}
+
+--------------------------------------------------------------------------------------------
+
+/*
+David Balladares
+Front End Developer
+PHP Tranfer File To Middle
+*/
+
+<?php
+header("Access-Control-Allow-Origin: *"); 
+error_reporting(E_ERROR | E_PARSE);
+$array = json_decode($HTTP_RAW_POST_DATA,true);
+//echo $HTTP_RAW_POST_DATA;
+//echo $array;
+
+$curl = curl_init("https://web.njit.edu/~jw532/miTransfer.php"); //'https://web.njit.edu/~jw532/miGetExam.php'
+//curl_setopt($curl, CURLOPT_POST, $HTTP_RAW_POST_DATA);
+//curl_setopt($curl, CURLOPT_URL, 'https://web.njit.edu/~jw532/miTransfer.php');     //changePathAfterTesting
+curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+curl_setopt($curl, CURLOPT_POSTFIELDS, $HTTP_RAW_POST_DATA);
+//curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);
+curl_setopt($curl, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
+
+$response = curl_exec($curl);
+curl_close($curl);
+
+echo $response;
+
+//$c = curl_init($url);
+//curl_setopt($c, CURLOPT_POSTFIELDS, $HTTP_RAW_POST_DATA);
+//curl_setopt($c, CURLOPT_RETURNTRANSFER, true);
+//curl_setopt($c, CURLOPT_HTTPHEADER, array('Content-Type: text/plain'));
+//$cResult = curl_exec($c);
+//curl_close($c);
+//echo $cResult;
+?>
+
+--------------------------------------------------------------------------------------------
+
+/*
+David Balladares
+Front End Developer
+Entire Project CSS Styles
+*/
+
+
+body{
+  background-color: #355c7d;
+  text-align: center;
+  margin: 7;
+  font-family: 'Manjari', sans-serif;
+
+
+}
+
+h1{
+  background-color: white;
+  color: #D33434;
+  padding-top: 20px;
+  border-color: azure;
+  border-radius: 10px;
+  border-style: inset;
+  margin-left: 150px;
+  margin-right: 150px;
+}
+
+.logInForm{
+  color: white;
+}
+
+input{
+  border-radius: 6px;
+  text-align: center;
+}
+
+.loginTable{
+  position: relative;
+  margin-left:auto;
+  margin-right:auto;
+}
+
+.logDiv{
+  display: inline-block;
+  padding: 60px 75px 60px;
+}
+
+.left{
+  width: 60%;
+  float: left;
+  display: inline-table;
+  padding-bottom: 8em;
+}
+
+.right{
+  border-style: dashed;
+  border-radius: 20px;
+  width: 35%;
+  float: left;
+  padding-bottom: 5em;
+  margin-left: 2%;
+
+}
+
+.leftStudent{
+  width: 50%;
+  float: left;
+}
+
+.rightStudent{
+  width: 50%;
+  float: left;
+}
+
+table{
+  position: relative;
+  margin-left:auto;
+  margin-right:auto;
+  border-style: inset;
+  border-spacing: 1em;
+  border-radius: 20px;
+  color: white;
+}
+
+
+.user{
+  display: inline-block;
+  width: 75px;
+  height: 75px;
+  background: #03527B;
+  border-radius: 50%;
+  position: relative;
+  border: 10px solid #03527B;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+.user::before{
+  content: '';
+  display: inline-block;
+  width: 25px;
+  height: 25px;
+  background: white;
+  border-radius: 50%;
+  position: absolute;
+  left: calc(50% - 14px);
+  top: 5px;
+}
+.user::after{
+  content: '';
+  display: inline-block;
+  width: 50px;
+  height: 50px;
+  background: white;
+  border-radius: 50%;
+  position: absolute;
+  left: calc(50% - 25px);
+  top: 35px;
+}
+
+.user:hover{
+  background-color: #355c7d;
+  border-width: 5px;
+  border-color: #355c7d;
+}
+
+.loginLogo{
+  background-color: #355c7d;
+  border-width: 5px;
+  border-color: #355c7d;
+}
+
+.top{
+  background: radial-gradient(black, transparent);
+  border-style: hidden;
+  border-radius: 20px;
+}
+
+.top h3{
+  padding-top: 10px;
+  color: white;
+}
+
+.fixed_header{
+  background-color: black;
+  color: white;
+  border-width: 5px;
+}
+
+#us{
+  color: white;
+}
+
